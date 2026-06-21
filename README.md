@@ -1,12 +1,21 @@
-# PNG Sequence Preview
+<div align="center">
 
-Browse, preview, and add PNG sequences to the After Effects timeline.
+<img src="https://i.pinimg.com/1200x/bb/f8/68/bbf868dc073fe05bffdca5a4f044f887.jpg" width="100%" alt="Banner" />
 
-**[Download v1.0.5](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)** · After Effects 2019–2025+ · macOS / Windows · **4 languages** (繁中 / 简中 / EN / 日本語)
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:4a0000,50:dc143c,100:ff4757&height=110&section=header&text=PNG%20Sequence%20Preview&fontSize=36&fontColor=ffffff" width="100%" />
+
+### Browse, preview, and import PNG sequences into the After Effects timeline
+
+[![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)
+[![Languages](https://img.shields.io/badge/Languages-4-ff4757?style=for-the-badge&labelColor=8b0000)](docs/readme/en.md)
+
+After Effects 2019–2025+ · macOS / Windows · 繁中 / 简中 / EN / 日本語
 
 <p align="center">
   <img src="docs/ui-main-v104.png" alt="Panel UI" width="420">
 </p>
+
+</div>
 
 ---
 
@@ -50,8 +59,10 @@ Browse, preview, and add PNG sequences to the After Effects timeline.
 
 <div align="center">
 
-**訪問人次**
+**Page Views**
 
-<img src="https://mayu.due.moe/get/@Marcycuteaf.ae-png-sequence-preview?theme=asoul" alt="訪問人次" />
+<img src="https://mayu.due.moe/get/@Marcycuteaf.ae-png-sequence-preview?theme=asoul" alt="Page views" />
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:4a0000,50:dc143c,100:ff4757&height=60&section=footer" width="100%" />
 
 </div>
