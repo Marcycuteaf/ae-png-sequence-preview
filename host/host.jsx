@@ -76,40 +76,77 @@ function __pngNodeJSON(n) {
         '}';
 }
 
-// Windows：使用 Explorer 風格大視窗選資料夾（WinForms OpenFileDialog）
+// Windows：Explorer 風格大視窗（結果寫入暫存檔，因 system.callSystem 常抓不到 stdout）
 function pngPickFolderWindows() {
-    var script = null;
+    var script = null, outFile = null, errFile = null;
     try {
-        script = new File(Folder.temp.fsName + "/pngseq_pick_folder.ps1");
+        if (typeof system === "undefined" || !system.callSystem) {
+            return "ERR:system.callSystem 不可用";
+        }
+        var tempDir = Folder.temp.fsName;
+        outFile = new File(tempDir + "/pngseq_pick_out.txt");
+        errFile = new File(tempDir + "/pngseq_pick_err.txt");
+        if (outFile.exists) outFile.remove();
+        if (errFile.exists) errFile.remove();
+
+        var outPath = outFile.fsName.replace(/\\/g, "\\\\");
+        var errPath = errFile.fsName.replace(/\\/g, "\\\\");
+
+        script = new File(tempDir + "/pngseq_pick_folder.ps1");
         script.encoding = "UTF-8";
         script.open("w");
-        script.writeln("Add-Type -AssemblyName System.Windows.Forms");
-        script.writeln("[System.Windows.Forms.Application]::EnableVisualStyles()");
-        script.writeln("$d = New-Object System.Windows.Forms.OpenFileDialog");
-        script.writeln("$d.Title = '\u9078\u64c7\u542b\u6709 PNG \u5e8f\u5217\u7684\u8cc7\u6599\u593e'");
-        script.writeln("$d.Filter = 'Folder|*.none'");
-        script.writeln("$d.ValidateNames = $false");
-        script.writeln("$d.CheckFileExists = $false");
-        script.writeln("$d.CheckPathExists = $true");
-        script.writeln("$d.FileName = 'Select this folder'");
-        script.writeln("if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {");
-        script.writeln("  $p = Split-Path $d.FileName -Parent");
-        script.writeln("  if ($p) { Write-Output $p } else { Write-Output $d.FileName }");
+        script.writeln("$outFile = '" + outPath + "'");
+        script.writeln("$errFile = '" + errPath + "'");
+        script.writeln("try {");
+        script.writeln("  Add-Type -AssemblyName System.Windows.Forms");
+        script.writeln("  [System.Windows.Forms.Application]::EnableVisualStyles()");
+        script.writeln("  $d = New-Object System.Windows.Forms.OpenFileDialog");
+        script.writeln("  $d.Title = 'Select folder containing PNG sequences'");
+        script.writeln("  $d.Filter = 'Folder|*.none'");
+        script.writeln("  $d.ValidateNames = $false");
+        script.writeln("  $d.CheckFileExists = $false");
+        script.writeln("  $d.CheckPathExists = $true");
+        script.writeln("  $d.FileName = 'Select this folder'");
+        script.writeln("  if ($env:USERPROFILE) { $d.InitialDirectory = $env:USERPROFILE }");
+        script.writeln("  $r = $d.ShowDialog()");
+        script.writeln("  if ($r -eq [System.Windows.Forms.DialogResult]::OK) {");
+        script.writeln("    $p = [System.IO.Path]::GetDirectoryName($d.FileName)");
+        script.writeln("    if ($p) { [IO.File]::WriteAllText($outFile, $p, [Text.Encoding]::UTF8) }");
+        script.writeln("  }");
+        script.writeln("} catch {");
+        script.writeln("  [IO.File]::WriteAllText($errFile, $_.Exception.Message, [Text.Encoding]::UTF8)");
         script.writeln("}");
         script.close();
 
-        var cmd = 'powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File "' + script.fsName + '"';
-        var out = system.callSystem(cmd);
-        out = String(out).replace(/\r/g, "").replace(/\n/g, "").replace(/^\s+|\s+$/g, "");
-        if (out && out.length > 0) {
-            var folder = new Folder(out);
-            if (folder.exists) return folder.fsName;
+        var ps1 = script.fsName.replace(/\//g, "\\");
+        var cmd = 'powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Normal -File "' + ps1 + '"';
+        system.callSystem(cmd);
+
+        if (errFile.exists) {
+            errFile.open("r");
+            var errMsg = errFile.read().replace(/^\s+|\s+$/g, "");
+            errFile.close();
+            errFile.remove();
+            if (errMsg) return "ERR:" + errMsg;
+        }
+        if (outFile.exists) {
+            outFile.open("r");
+            var result = outFile.read().replace(/^\s+|\s+$/g, "").replace(/^\uFEFF/, "");
+            outFile.close();
+            outFile.remove();
+            if (result && result.length > 0) {
+                var folder = new Folder(result);
+                if (folder.exists) return folder.fsName;
+                return "ERR:資料夾不存在：" + result;
+            }
         }
         return "";
     } catch (e) {
-        return "";
+        return "ERR:" + e.toString();
     } finally {
         if (script) { try { script.remove(); } catch (e2) {} }
+        if (outFile && outFile.exists) { try { outFile.remove(); } catch (e3) {} }
+        if (errFile && errFile.exists) { try { errFile.remove(); } catch (e4) {} }
     }
 }
 

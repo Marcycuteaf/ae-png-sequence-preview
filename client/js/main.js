@@ -61,32 +61,58 @@
         return 'file:///' + out.join('/');
     }
 
-    // 從 HTML 資料夾選擇器取得根目錄（Windows CEP 會提供 file.path）
+    // 從 HTML 資料夾選擇器取得根目錄
     function rootFromFileList(files) {
         if (!files || !files.length) return null;
         var f = files[0];
-        if (f.path && f.webkitRelativePath) {
+        // Windows CEP：file.path 通常可用
+        if (f.path) {
             var full = String(f.path);
-            var rel = String(f.webkitRelativePath).replace(/\//g, '\\');
-            var fullWin = full.replace(/\//g, '\\');
-            var idx = fullWin.lastIndexOf(rel);
-            if (idx >= 0) return fullWin.substring(0, idx).replace(/[\\\/]+$/, '');
-            var sep = Math.max(fullWin.lastIndexOf('\\'), fullWin.lastIndexOf('/'));
-            if (sep > 0) return fullWin.substring(0, sep);
+            if (f.webkitRelativePath) {
+                var rel = String(f.webkitRelativePath).replace(/\//g, '\\');
+                var fullWin = full.replace(/\//g, '\\');
+                var idx = fullWin.toLowerCase().lastIndexOf(rel.toLowerCase());
+                if (idx >= 0) return fullWin.substring(0, idx).replace(/[\\\/]+$/, '');
+            }
+            var sep = Math.max(full.lastIndexOf('\\'), full.lastIndexOf('/'));
+            if (sep > 0) return full.substring(0, sep);
         }
+        // 僅有 webkitRelativePath：取第一層目錄名，需搭配 path
         return null;
     }
 
     function pickFolderNative(cb) {
         if (!els.folderInput) { cb(null); return; }
         els.folderInput.value = '';
-        els.folderInput.onchange = function () {
-            var files = els.folderInput.files;
-            var root = rootFromFileList(files);
-            cb(root);
+        var done = false;
+        function finish(root) {
+            if (done) return;
+            done = true;
+            window.removeEventListener('focus', onWinFocus);
             els.folderInput.onchange = null;
+            cb(root);
+        }
+        function onWinFocus() {
+            // 對話框關閉後視窗重新取得焦點；稍等 onchange 觸發
+            setTimeout(function () {
+                if (done) return;
+                if (els.folderInput.files && els.folderInput.files.length) return;
+                finish(null);
+            }, 500);
+        }
+        els.folderInput.onchange = function () {
+            finish(rootFromFileList(els.folderInput.files));
         };
+        window.addEventListener('focus', onWinFocus);
         els.folderInput.click();
+    }
+
+    function tryNativeFolderPicker(cb) {
+        setStatus('請選擇資料夾…');
+        pickFolderNative(function (root) {
+            if (root) { cb(root); return; }
+            cb(null);
+        });
     }
 
     // ================= 持久化 =================
@@ -474,17 +500,26 @@
     }
 
     function openFolderPicker() {
-        // Windows：Explorer 大視窗（host 端 PowerShell OpenFileDialog）
         if (IS_WIN) {
-            setStatus('請在 Explorer 視窗選擇資料夾…');
-            call('pngPickFolder', [], function (path) {
-                if (!path) { setStatus('已取消'); return; }
-                addRoot(path);
+            setStatus('請選擇資料夾…');
+            tryNativeFolderPicker(function (root) {
+                if (root) { addRoot(root); return; }
+                setStatus('正在開啟 Explorer 大視窗…');
+                call('pngPickFolder', [], function (path) {
+                    if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
+                        addRoot(path); return;
+                    }
+                    if (path && path.indexOf('ERR:') === 0) {
+                        setStatus('無法開啟：' + path.replace(/^ERR:?/, ''), 'err');
+                    } else {
+                        setStatus('已取消', '');
+                    }
+                });
             });
             return;
         }
-        // macOS：CEP 原生資料夾選擇器，否則 ExtendScript
-        pickFolderNative(function (root) {
+        // macOS
+        tryNativeFolderPicker(function (root) {
             if (root) { addRoot(root); return; }
             call('pngPickFolder', [], function (path) {
                 if (!path) { setStatus('已取消'); return; }
