@@ -1,0 +1,6 @@
+# 建置產物（zxp/zip 以 GitHub Release 形式發佈，不入庫）
+dist/
+
+# 系統檔
+.DS_Store
+**/.DS_Store

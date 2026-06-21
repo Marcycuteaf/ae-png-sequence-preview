@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PNG 序列預覽</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="top">
+        <button id="pick" class="btn-primary">➕ 加入資料夾</button>
+        <button id="clear" class="btn" title="清空全部">🗑</button>
+        <button id="theme" class="btn" title="介面顏色">🎨</button>
+        <div id="root" class="root" title="">尚未載入資料夾…</div>
+    </div>
+
+    <div id="settings" class="settings" style="display:none">
+        <label>主色 <input type="color" id="cAccent" value="#5b9dff"></label>
+        <label>副色 <input type="color" id="cAccent2" value="#9a6cff"></label>
+        <label>背景 <input type="color" id="cBg" value="#232323"></label>
+        <span class="presets">
+            <i class="swatch" data-a="#5b9dff" data-b="#9a6cff" style="background:linear-gradient(90deg,#5b9dff,#9a6cff)"></i>
+            <i class="swatch" data-a="#39d98a" data-b="#2bb673" style="background:linear-gradient(90deg,#39d98a,#2bb673)"></i>
+            <i class="swatch" data-a="#ff8a5b" data-b="#ff5b9d" style="background:linear-gradient(90deg,#ff8a5b,#ff5b9d)"></i>
+            <i class="swatch" data-a="#f5c542" data-b="#ff8a5b" style="background:linear-gradient(90deg,#f5c542,#ff8a5b)"></i>
+        </span>
+        <button id="themeReset" class="mini">重設</button>
+    </div>
+
+    <div class="main">
+        <div class="side">
+            <div class="side-head">
+                <input id="search" class="search" type="text" placeholder="🔍 搜尋序列名稱…">
+                <div class="side-tools">
+                    <span id="count" class="badge">0 序列</span>
+                    <button id="expandAll" class="mini" title="全部展開">⊞</button>
+                    <button id="collapseAll" class="mini" title="全部收合">⊟</button>
+                </div>
+            </div>
+            <div id="tree" class="tree"></div>
+        </div>
+
+        <div class="preview">
+            <div id="stage" class="stage">
+                <img id="frame" alt="">
+                <div id="empty" class="empty">選擇左側序列後在此預覽<br>切換時會自動播放，雙擊即可加入時間軸</div>
+            </div>
+            <div id="name" class="name">—</div>
+            <div id="info" class="info">0 / 0 格</div>
+            <input id="slider" class="slider" type="range" min="0" max="0" value="0" disabled>
+            <div class="controls">
+                <button id="prev" class="btn" disabled title="上一個序列">◀</button>
+                <button id="play" class="btn" disabled>▶ 播放</button>
+                <button id="next" class="btn" disabled title="下一個序列">▶</button>
+                <label class="fps">FPS
+                    <input id="fps" type="number" min="1" max="120" value="12">
+                </label>
+                <label class="autoplay" title="切換序列時自動播放">
+                    <input id="autoplay" type="checkbox" checked> 自動播放
+                </label>
+                <button id="import" class="btn-primary" disabled>⬇ 加入時間軸</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="status" class="status">準備就緒</div>
+
+    <script src="./js/lib/CSInterface.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
