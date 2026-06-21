@@ -82,36 +82,66 @@
     }
 
     function pickFolderNative(cb) {
-        if (!els.folderInput) { cb(null); return; }
+        if (!els.folderInput) { cb(null, 'no-input'); return; }
         els.folderInput.value = '';
         var done = false;
-        function finish(root) {
+        var blurred = false;
+
+        function finish(root, reason) {
             if (done) return;
             done = true;
-            window.removeEventListener('focus', onWinFocus);
-            els.folderInput.onchange = null;
-            cb(root);
+            cleanup();
+            cb(root, reason || (root ? 'ok' : 'cancel'));
         }
+        function cleanup() {
+            window.removeEventListener('focus', onWinFocus);
+            window.removeEventListener('blur', onBlur);
+            els.folderInput.onchange = null;
+            clearTimeout(noDialogTimer);
+        }
+        function onBlur() { blurred = true; }
         function onWinFocus() {
-            // 對話框關閉後視窗重新取得焦點；稍等 onchange 觸發
+            if (!blurred) return;
             setTimeout(function () {
                 if (done) return;
                 if (els.folderInput.files && els.folderInput.files.length) return;
-                finish(null);
-            }, 500);
+                finish(null, 'native-cancel');
+            }, 600);
         }
         els.folderInput.onchange = function () {
-            finish(rootFromFileList(els.folderInput.files));
+            var root = rootFromFileList(els.folderInput.files);
+            finish(root, root ? 'native-ok' : 'native-empty');
         };
+        window.addEventListener('blur', onBlur);
         window.addEventListener('focus', onWinFocus);
-        els.folderInput.click();
+        try { els.folderInput.click(); } catch (e) {
+            finish(null, 'native-click-err:' + e);
+            return;
+        }
+        // 若 2 秒內沒有 blur，代表對話框可能沒開
+        var noDialogTimer = setTimeout(function () {
+            if (done) return;
+            if (!blurred) finish(null, 'native-no-dialog');
+        }, 2000);
     }
 
-    function tryNativeFolderPicker(cb) {
-        setStatus('請選擇資料夾…');
-        pickFolderNative(function (root) {
-            if (root) { cb(root); return; }
-            cb(null);
+    function runDiag() {
+        call('pngDiag', [], function (ret) {
+            setStatus(ret.indexOf('OK:') === 0 ? ('除錯：' + ret.slice(3)) : ret, ret.indexOf('OK:') === 0 ? 'ok' : 'err');
+        });
+    }
+
+    function pickExplorer(cb) {
+        setStatus('正在開啟 Explorer 大視窗…');
+        call('pngPickFolder', [], function (path) {
+            cb(path);
+        });
+    }
+
+    function pickNativeFallback(cb) {
+        setStatus('正在開啟系統資料夾選擇器…');
+        pickFolderNative(function (root, reason) {
+            cb(root, reason);
         });
     }
 
@@ -499,27 +529,27 @@
         })();
     }
 
-    function openFolderPicker() {
+    function openFolderPicker(e) {
+        if (e && e.shiftKey) { runDiag(); return; }
+
         if (IS_WIN) {
-            setStatus('請選擇資料夾…');
-            tryNativeFolderPicker(function (root) {
-                if (root) { addRoot(root); return; }
-                setStatus('正在開啟 Explorer 大視窗…');
-                call('pngPickFolder', [], function (path) {
-                    if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
-                        addRoot(path); return;
-                    }
-                    if (path && path.indexOf('ERR:') === 0) {
-                        setStatus('無法開啟：' + path.replace(/^ERR:?/, ''), 'err');
-                    } else {
-                        setStatus('已取消', '');
-                    }
+            // Windows：優先 Explorer 大視窗
+            pickExplorer(function (path) {
+                if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
+                    addRoot(path); return;
+                }
+                var err = (path && path.indexOf('ERR:') === 0) ? path.replace(/^ERR:?/, '') : '';
+                if (err) setStatus('Explorer：' + err + ' → 改用備用', 'err');
+                else setStatus('Explorer 已取消 → 改用備用');
+                pickNativeFallback(function (root, reason) {
+                    if (root) { addRoot(root); return; }
+                    setStatus('已取消 (' + (reason || 'none') + ')', 'err');
                 });
             });
             return;
         }
         // macOS
-        tryNativeFolderPicker(function (root) {
+        pickNativeFallback(function (root) {
             if (root) { addRoot(root); return; }
             call('pngPickFolder', [], function (path) {
                 if (!path) { setStatus('已取消'); return; }

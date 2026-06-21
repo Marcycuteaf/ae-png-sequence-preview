@@ -76,29 +76,41 @@ function __pngNodeJSON(n) {
         '}';
 }
 
-// Windows：Explorer 風格大視窗（結果寫入暫存檔，因 system.callSystem 常抓不到 stdout）
+function __pngHostLog(msg) {
+    try {
+        var lf = new File(Folder.temp.fsName.replace(/\\/g, "/") + "/pngseq_host_log.txt");
+        lf.open("a");
+        lf.writeln(msg);
+        lf.close();
+    } catch (e) {}
+}
+
+// Windows：Explorer 大視窗（結果寫暫存檔 + 除錯日誌）
 function pngPickFolderWindows() {
-    var script = null, outFile = null, errFile = null;
+    var script = null, outFile = null, logFile = null;
     try {
         if (typeof system === "undefined" || !system.callSystem) {
-            return "ERR:system.callSystem 不可用";
+            return "ERR:system.callSystem 不可用（請確認 AE 偏好設定允許腳本）";
         }
-        var tempDir = Folder.temp.fsName;
+        var tempDir = Folder.temp.fsName.replace(/\\/g, "/");
         outFile = new File(tempDir + "/pngseq_pick_out.txt");
-        errFile = new File(tempDir + "/pngseq_pick_err.txt");
+        logFile = new File(tempDir + "/pngseq_pick_log.txt");
         if (outFile.exists) outFile.remove();
-        if (errFile.exists) errFile.remove();
+        if (logFile.exists) logFile.remove();
 
         var outPath = outFile.fsName.replace(/\\/g, "\\\\");
-        var errPath = errFile.fsName.replace(/\\/g, "\\\\");
+        var logPath = logFile.fsName.replace(/\\/g, "\\\\");
 
         script = new File(tempDir + "/pngseq_pick_folder.ps1");
         script.encoding = "UTF-8";
         script.open("w");
         script.writeln("$outFile = '" + outPath + "'");
-        script.writeln("$errFile = '" + errPath + "'");
+        script.writeln("$logFile = '" + logPath + "'");
+        script.writeln("function Log([string]$m) { Add-Content -Path $logFile -Value $m -Encoding UTF8 }");
+        script.writeln("Log '=== pngseq folder picker start ==='");
         script.writeln("try {");
         script.writeln("  Add-Type -AssemblyName System.Windows.Forms");
+        script.writeln("  Add-Type -AssemblyName System.Drawing");
         script.writeln("  [System.Windows.Forms.Application]::EnableVisualStyles()");
         script.writeln("  $d = New-Object System.Windows.Forms.OpenFileDialog");
         script.writeln("  $d.Title = 'Select folder containing PNG sequences'");
@@ -108,46 +120,66 @@ function pngPickFolderWindows() {
         script.writeln("  $d.CheckPathExists = $true");
         script.writeln("  $d.FileName = 'Select this folder'");
         script.writeln("  if ($env:USERPROFILE) { $d.InitialDirectory = $env:USERPROFILE }");
-        script.writeln("  $r = $d.ShowDialog()");
+        script.writeln("  Log 'ShowDialog...'");
+        script.writeln("  $form = New-Object System.Windows.Forms.Form");
+        script.writeln("  $form.TopMost = $true");
+        script.writeln("  $form.WindowState = 'Minimized'");
+        script.writeln("  $form.Show()");
+        script.writeln("  $form.Hide()");
+        script.writeln("  $r = $d.ShowDialog($form)");
+        script.writeln("  $form.Close()");
+        script.writeln("  Log ('Dialog result: ' + $r)");
         script.writeln("  if ($r -eq [System.Windows.Forms.DialogResult]::OK) {");
         script.writeln("    $p = [System.IO.Path]::GetDirectoryName($d.FileName)");
+        script.writeln("    Log ('Selected: ' + $p)");
         script.writeln("    if ($p) { [IO.File]::WriteAllText($outFile, $p, [Text.Encoding]::UTF8) }");
-        script.writeln("  }");
+        script.writeln("  } else { Log 'User cancelled' }");
         script.writeln("} catch {");
-        script.writeln("  [IO.File]::WriteAllText($errFile, $_.Exception.Message, [Text.Encoding]::UTF8)");
+        script.writeln("  Log ('ERROR: ' + $_.Exception.Message)");
         script.writeln("}");
+        script.writeln("Log '=== end ==='");
         script.close();
 
         var ps1 = script.fsName.replace(/\//g, "\\");
-        var cmd = 'powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Normal -File "' + ps1 + '"';
+        // start /wait 確保等對話框關閉
+        var cmd = 'cmd.exe /c start /wait "" powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Normal -File "' + ps1 + '"';
+        __pngHostLog("cmd: " + cmd);
         system.callSystem(cmd);
 
-        if (errFile.exists) {
-            errFile.open("r");
-            var errMsg = errFile.read().replace(/^\s+|\s+$/g, "");
-            errFile.close();
-            errFile.remove();
-            if (errMsg) return "ERR:" + errMsg;
+        var logText = "";
+        if (logFile.exists) {
+            logFile.open("r");
+            logText = logFile.read();
+            logFile.close();
         }
         if (outFile.exists) {
             outFile.open("r");
             var result = outFile.read().replace(/^\s+|\s+$/g, "").replace(/^\uFEFF/, "");
             outFile.close();
-            outFile.remove();
             if (result && result.length > 0) {
                 var folder = new Folder(result);
                 if (folder.exists) return folder.fsName;
                 return "ERR:資料夾不存在：" + result;
             }
         }
+        if (logText.indexOf("ERROR:") >= 0) {
+            return "ERR:" + logText.split("\n").join(" | ").substring(0, 200);
+        }
         return "";
     } catch (e) {
         return "ERR:" + e.toString();
     } finally {
         if (script) { try { script.remove(); } catch (e2) {} }
-        if (outFile && outFile.exists) { try { outFile.remove(); } catch (e3) {} }
-        if (errFile && errFile.exists) { try { errFile.remove(); } catch (e4) {} }
     }
+}
+
+// 除錯：回傳環境資訊
+function pngDiag() {
+    var hasSys = (typeof system !== "undefined" && system.callSystem);
+    return "OK:os=" + $.os +
+        ";ae=" + app.name + " " + app.version +
+        ";system=" + hasSys +
+        ";temp=" + (Folder.temp ? Folder.temp.fsName : "none");
 }
 
 // 選擇資料夾，回傳 fsName 或空字串
