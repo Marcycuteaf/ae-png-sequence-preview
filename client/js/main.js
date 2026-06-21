@@ -474,19 +474,16 @@
     }
 
     function openFolderPicker() {
-        // Windows：優先用系統原生資料夾選擇器（大視窗、可一次選整包）
+        // Windows：Explorer 大視窗（host 端 PowerShell OpenFileDialog）
         if (IS_WIN) {
-            pickFolderNative(function (root) {
-                if (root) { addRoot(root); return; }
-                setStatus('改用 AE 資料夾選擇…');
-                call('pngPickFolder', [], function (path) {
-                    if (!path) { setStatus('已取消'); return; }
-                    addRoot(path);
-                });
+            setStatus('請在 Explorer 視窗選擇資料夾…');
+            call('pngPickFolder', [], function (path) {
+                if (!path) { setStatus('已取消'); return; }
+                addRoot(path);
             });
             return;
         }
-        // macOS：ExtendScript 選擇器體驗已足夠；若 CEP 有 file.path 也支援原生
+        // macOS：CEP 原生資料夾選擇器，否則 ExtendScript
         pickFolderNative(function (root) {
             if (root) { addRoot(root); return; }
             call('pngPickFolder', [], function (path) {

@@ -34,11 +34,14 @@
 
 | 平台 Platform | 下載 Download |
 | --- | --- |
-| **macOS** | `PNG-Sequence-Preview-v1.0.1-macOS.zxp` 或 `-macOS.zip` |
-| **Windows** | `PNG-Sequence-Preview-v1.0.1-Windows.zxp` 或 `-Windows.zip` |
+| **macOS** | `PNG-Sequence-Preview-v1.0.2-macOS.zxp` 或 `-macOS.zip` |
+| **Windows** | `PNG-Sequence-Preview-v1.0.2-Windows.zxp` 或 `-Windows.zip` |
 
 > 兩個 ZXP **內容相同**（通用 CEP 擴充），檔名僅方便辨識平台。用 [aescripts ZXP Installer](https://aescripts.com/learn/zxp-installer/) 安裝後重啟 AE 即可。
 > Both ZXP files are **identical** (universal CEP); filenames are labeled for clarity. Install with a ZXP installer and restart AE.
+
+### v1.0.2 更新
+- 🪟 **Windows**：資料夾選擇改為 **Explorer 大視窗**（左側快速存取、路徑列、縮圖，如檔案總管）
 
 ### v1.0.1 更新
 - 🪟 **Windows**：修正 PNG 序列預覽無法顯示（路徑 / file URL）
@@ -159,4 +162,4 @@
 
 ---
 
-<p align="center"><sub>Bundle ID <code>com.marcy.pngseq</code> · v1.0.1 · macOS &amp; Windows · Made with ♥ for motion designers</sub></p>
+<p align="center"><sub>Bundle ID <code>com.marcy.pngseq</code> · v1.0.2 · macOS &amp; Windows · Made with ♥ for motion designers</sub></p>

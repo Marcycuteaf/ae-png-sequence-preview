@@ -71,7 +71,9 @@ An After Effects (CEP) panel that lets you browse nested folders full of PNG seq
 
 ### 1. 載入資料夾 / Load folders
 - **中文**：點 **➕ 加入資料夾**，選擇含有 PNG 序列的「根目錄」。可重複加入多個資料夾，會各自成為一個頂層分組（🗂）。滑鼠移到分組上、點右側 **✕** 可移除單個；**🗑** 清空全部。
-- **English**: Click **➕ 加入資料夾** and pick a root folder. Add as many as you like — each becomes a top-level group (🗂). Hover a group and click **✕** to remove it; **🗑** clears all.
+- **Windows v1.0.2+**：會開啟**完整 Explorer 大視窗**（左側快速存取、路徑列、縮圖預覽）。請導覽到目標資料夾後按 **「開啟 / Open」** 即可（不需選取個別 PNG 檔）。
+- **English**: Click **➕ Add Folder** and pick a root folder. Add as many as you like — each becomes a top-level group (🗂). Hover a group and click **✕** to remove it; **🗑** clears all.
+- **Windows v1.0.2+**: Opens the **full Explorer-style dialog** (Quick access, address bar, thumbnails). Navigate to the target folder and click **Open** — you don't need to select individual PNG files.
 
 ### 2. 瀏覽與搜尋 / Browse & search
 - **中文**：左側為可展開的樹狀清單。`📁` 是資料夾、`🎞` 是序列（括號顯示張數）。上方 **🔍 搜尋框** 即時過濾；**⊞ / ⊟** 一鍵全展開／收合。

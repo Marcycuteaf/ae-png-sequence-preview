@@ -76,9 +76,49 @@ function __pngNodeJSON(n) {
         '}';
 }
 
+// Windows：使用 Explorer 風格大視窗選資料夾（WinForms OpenFileDialog）
+function pngPickFolderWindows() {
+    var script = null;
+    try {
+        script = new File(Folder.temp.fsName + "/pngseq_pick_folder.ps1");
+        script.encoding = "UTF-8";
+        script.open("w");
+        script.writeln("Add-Type -AssemblyName System.Windows.Forms");
+        script.writeln("[System.Windows.Forms.Application]::EnableVisualStyles()");
+        script.writeln("$d = New-Object System.Windows.Forms.OpenFileDialog");
+        script.writeln("$d.Title = '\u9078\u64c7\u542b\u6709 PNG \u5e8f\u5217\u7684\u8cc7\u6599\u593e'");
+        script.writeln("$d.Filter = 'Folder|*.none'");
+        script.writeln("$d.ValidateNames = $false");
+        script.writeln("$d.CheckFileExists = $false");
+        script.writeln("$d.CheckPathExists = $true");
+        script.writeln("$d.FileName = 'Select this folder'");
+        script.writeln("if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {");
+        script.writeln("  $p = Split-Path $d.FileName -Parent");
+        script.writeln("  if ($p) { Write-Output $p } else { Write-Output $d.FileName }");
+        script.writeln("}");
+        script.close();
+
+        var cmd = 'powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File "' + script.fsName + '"';
+        var out = system.callSystem(cmd);
+        out = String(out).replace(/\r/g, "").replace(/\n/g, "").replace(/^\s+|\s+$/g, "");
+        if (out && out.length > 0) {
+            var folder = new Folder(out);
+            if (folder.exists) return folder.fsName;
+        }
+        return "";
+    } catch (e) {
+        return "";
+    } finally {
+        if (script) { try { script.remove(); } catch (e2) {} }
+    }
+}
+
 // 選擇資料夾，回傳 fsName 或空字串
 function pngPickFolder() {
     try {
+        if ($.os.indexOf("Windows") >= 0) {
+            return pngPickFolderWindows();
+        }
         var f = Folder.selectDialog("選擇含有 PNG 序列的資料夾");
         return f ? f.fsName : "";
     } catch (e) { return ""; }
