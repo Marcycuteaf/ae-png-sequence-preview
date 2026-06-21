@@ -52,6 +52,6 @@ Browse, preview, and add PNG sequences to the After Effects timeline.
 
 **訪問人次**
 
-<img src="https://count.getloli.org/get/@Marcycuteaf.ae-png-sequence-preview?theme=moe" alt="訪問人次" />
+<img src="https://mayu.due.moe/get/@Marcycuteaf.ae-png-sequence-preview?theme=asoul" alt="訪問人次" />
 
 </div>
