@@ -9,7 +9,7 @@
 [![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)
 [![Languages](https://img.shields.io/badge/Languages-4-ff4757?style=for-the-badge&labelColor=8b0000)](docs/readme/en.md)
 
-After Effects 2019–2025+ · macOS / Windows · 繁中 / 简中 / EN / 日本語
+After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 <p align="center">
   <img src="docs/ui-main-v104.png" alt="Panel UI" width="420">
@@ -34,7 +34,7 @@ After Effects 2019–2025+ · macOS / Windows · 繁中 / 简中 / EN / 日本�
 
 ## Documentation
 
-- [繁體中文](docs/readme/zh-TW.md)
+- [TC](docs/readme/zh-TW.md)
 - [English](docs/readme/en.md)
 - [日本語](docs/readme/ja.md)
 - [Русский](docs/readme/ru.md)
@@ -45,7 +45,7 @@ After Effects 2019–2025+ · macOS / Windows · 繁中 / 简中 / EN / 日本�
 
 | Version | Notes |
 | --- | --- |
-| **1.0.5** | In-panel language switch (zh-TW · zh-CN · en · ja) |
+| **1.0.5** | In-panel language switch (TC · SC · en · ja) |
 | 1.0.4 | Windows folder picker fix · Shift+click debug |
 | 1.0.3 | Windows picker temp-file output |
 | 1.0.2 | Explorer-style folder dialog |

@@ -2,7 +2,7 @@
 
 Расширение After Effects — просмотр PNG-секвенций, превью, добавление на таймлайн
 
-[← README](../../README.md) · [繁體中文](zh-TW.md) · [English](en.md) · [日本語](ja.md)
+[← README](../../README.md) · [TC](zh-TW.md) · [English](en.md) · [日本語](ja.md)
 
 <p align="center">
   <img src="../ui-main-v104.png" alt="Интерфейс панели" width="420">

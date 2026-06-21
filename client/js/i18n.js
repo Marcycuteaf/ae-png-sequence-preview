@@ -1,4 +1,4 @@
-/* PNG Sequence Preview — i18n (zh-TW · zh-CN · en · ja) */
+/* PNG Sequence Preview — i18n (TC · SC · en · ja) */
 var I18n = (function () {
     'use strict';
 
@@ -6,8 +6,8 @@ var I18n = (function () {
     var DEFAULT = 'zh-TW';
 
     var LABELS = {
-        'zh-TW': '繁體中文',
-        'zh-CN': '简体中文',
+        'zh-TW': 'TC',
+        'zh-CN': 'SC',
         'en': 'English',
         'ja': '日本語'
     };

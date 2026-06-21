@@ -2,7 +2,7 @@
 
 After Effects extension — browse PNG sequences, preview, add to timeline
 
-[← README](../../README.md) · [繁體中文](zh-TW.md) · [日本語](ja.md) · [Русский](ru.md)
+[← README](../../README.md) · [TC](zh-TW.md) · [日本語](ja.md) · [Русский](ru.md)
 
 <p align="center">
   <img src="../ui-main-v104.png" alt="Panel UI" width="420">

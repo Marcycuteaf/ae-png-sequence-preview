@@ -2,7 +2,7 @@
 
 After Effects 拡張パネル — PNG シーケンスの閲覧・プレビュー・タイムライン追加
 
-[← README](../../README.md) · [繁體中文](zh-TW.md) · [English](en.md) · [Русский](ru.md)
+[← README](../../README.md) · [TC](zh-TW.md) · [English](en.md) · [Русский](ru.md)
 
 <p align="center">
   <img src="../ui-main-v104.png" alt="パネル UI" width="420">
