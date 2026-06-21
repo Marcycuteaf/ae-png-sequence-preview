@@ -5,7 +5,7 @@
 [← Главная](../../README.md) · [繁體中文](zh-TW.md) · [English](en.md) · [日本語](ja.md)
 
 <p align="center">
-  <img src="../screenshot-main.png" alt="Главный интерфейс" width="90%">
+  <img src="../ui-main-v104.png" alt="Главный интерфейс v1.0.4" width="90%">
 </p>
 
 ---

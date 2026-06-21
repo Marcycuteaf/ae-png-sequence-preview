@@ -5,7 +5,7 @@
 [← 返回首頁](../../README.md) · [English](en.md) · [日本語](ja.md) · [Русский](ru.md)
 
 <p align="center">
-  <img src="../screenshot-main.png" alt="主介面" width="90%">
+  <img src="../ui-main-v104.png" alt="主介面 v1.0.4" width="90%">
 </p>
 
 ---

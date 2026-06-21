@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/hero-banner.png" alt="PNG Sequence Preview" width="100%">
+  <img src="docs/hero-v104.png" alt="PNG Sequence Preview" width="100%">
 </p>
 
 <h1 align="center">PNG Sequence Preview</h1>
@@ -12,9 +12,9 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshot-main.png" alt="Main UI" width="46%">
+  <img src="docs/ui-main-v104.png" alt="Main UI v1.0.4" width="46%">
   &nbsp;
-  <img src="docs/screenshot-theme.png" alt="Theme settings" width="46%">
+  <img src="docs/ui-theme-v104.png" alt="Theme settings v1.0.4" width="46%">
 </p>
 
 ---
