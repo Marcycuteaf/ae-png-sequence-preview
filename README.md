@@ -2,7 +2,7 @@
 
 Browse, preview, and add PNG sequences to the After Effects timeline.
 
-**[Download v1.0.4](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)** · After Effects 2019–2025+ · macOS / Windows
+**[Download v1.0.5](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)** · After Effects 2019–2025+ · macOS / Windows · **4 languages** (繁中 / 简中 / EN / 日本語)
 
 <p align="center">
   <img src="docs/ui-main-v104.png" alt="Panel UI" width="420">
@@ -14,8 +14,8 @@ Browse, preview, and add PNG sequences to the After Effects timeline.
 
 | Platform | File |
 | --- | --- |
-| macOS | `PNG-Sequence-Preview-v1.0.4-macOS.zxp` |
-| Windows | `PNG-Sequence-Preview-v1.0.4-Windows.zxp` |
+| macOS | `PNG-Sequence-Preview-v1.0.5-macOS.zxp` |
+| Windows | `PNG-Sequence-Preview-v1.0.5-Windows.zxp` |
 
 1. Install with [ZXP Installer](https://aescripts.com/learn/zxp-installer/)
 2. Restart After Effects
