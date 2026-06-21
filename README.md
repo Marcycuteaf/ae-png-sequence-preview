@@ -45,3 +45,13 @@ Browse, preview, and add PNG sequences to the After Effects timeline.
 ---
 
 <sub>Bundle ID `com.marcy.pngseq`</sub>
+
+---
+
+<div align="center">
+
+**訪問人次**
+
+<img src="https://count.getloli.org/get/@Marcycuteaf.ae-png-sequence-preview?theme=moe" alt="訪問人次" />
+
+</div>
