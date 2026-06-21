@@ -43,33 +43,27 @@ An After Effects (CEP) panel that lets you browse nested folders full of PNG seq
 
 ### 方法 B：手動安裝 / Method B: Manual install
 
-**中文**
-此為自簽章擴充，手動安裝需先開啟「除錯模式」(PlayerDebugMode)：
-
-1. 開啟「終端機」，依你的 AE 版本執行（CEP 版本對照：2024≈11、2025≈12）：
+**macOS**
+1. 開啟「終端機」，依 AE 版本執行（2024≈CSXS.11、2025≈CSXS.12）：
    ```bash
    defaults write com.adobe.CSXS.12 PlayerDebugMode 1
    defaults write com.adobe.CSXS.11 PlayerDebugMode 1
    ```
-2. 將 ZXP 改副檔名為 `.zip` 解壓，把 `com.marcy.pngseq` 整個資料夾放到：
-   ```
-   ~/Library/Application Support/Adobe/CEP/extensions/
-   ```
+2. 將 ZXP 改副檔名為 `.zip` 解壓，放到：
+   `~/Library/Application Support/Adobe/CEP/extensions/`
 3. 重新啟動 After Effects。
 
-**English**
-This is a self-signed extension, so manual install needs "PlayerDebugMode" enabled:
+**Windows**
+1. 以系統管理員開啟「登錄編輯程式」或執行 reg 檔，新增字串值 `PlayerDebugMode` = `1`：
+   - `HKEY_CURRENT_USER\Software\Adobe\CSXS.12`（AE 2025）
+   - `HKEY_CURRENT_USER\Software\Adobe\CSXS.11`（AE 2024）
+2. 將 ZXP 改副檔名為 `.zip` 解壓，放到：
+   `C:\Users\<你的使用者>\AppData\Roaming\Adobe\CEP\extensions\`
+3. 重新啟動 After Effects。
 
-1. In Terminal, run (CEP map: AE 2024≈11, 2025≈12):
-   ```bash
-   defaults write com.adobe.CSXS.12 PlayerDebugMode 1
-   defaults write com.adobe.CSXS.11 PlayerDebugMode 1
-   ```
-2. Rename the ZXP to `.zip`, unzip it, and put the whole `com.marcy.pngseq` folder into:
-   ```
-   ~/Library/Application Support/Adobe/CEP/extensions/
-   ```
-3. Restart After Effects.
+**English (manual install)**
+- **macOS**: Enable PlayerDebugMode via `defaults write` (see above), unzip ZXP to `~/Library/Application Support/Adobe/CEP/extensions/`, restart AE.
+- **Windows**: Set `PlayerDebugMode` = `1` in Registry under `HKCU\Software\Adobe\CSXS.12` (or `.11`), unzip ZXP to `%AppData%\Adobe\CEP\extensions\`, restart AE.
 
 ---
 
@@ -95,7 +89,13 @@ This is a self-signed extension, so manual install needs "PlayerDebugMode" enabl
 - **中文**：點 **🎨** 開啟配色面板，可調 **主色 / 副色 / 背景**，或點預設色塊一鍵套用、**重設** 還原預設。設定會自動記住。
 - **English**: Click **🎨** to open color settings — adjust **primary / secondary / background**, use preset swatches, or **重設** to restore defaults. Your choice is remembered.
 
-### 6. 記憶功能 / Persistence
+### 6. Loop 循環 / Loop
+- **中文**：勾選 **自動 Loop** 後，加入時間軸時自動啟用 Time Remap 並套用 `loopOut("cycle")`。也可在 AE 中選中圖層後按 **🔁 Loop**。
+- **English**: Enable **自動 Loop** to apply `loopOut("cycle")` when adding to timeline. Or select layer(s) in AE and press **🔁 Loop**.
+
+> 🪟 **Windows v1.0.1+**：資料夾選擇改用系統原生大視窗；PNG 預覽路徑已修正。
+
+### 7. 記憶功能 / Persistence
 - **中文**：已載入的資料夾清單與配色都會儲存，**下次開啟 AE 會自動還原**（若資料夾被移走會自動略過）。
 - **English**: Loaded folders and color theme are saved and **automatically restored next time you open AE** (missing folders are skipped).
 
@@ -115,7 +115,10 @@ This is a self-signed extension, so manual install needs "PlayerDebugMode" enabl
 
 ---
 
-## 六、版本 / Version
+## 七、版本 / Version
 
-- v1.0.0 — Bundle ID: `com.marcy.pngseq`
+- **v1.0.1** — Windows 預覽修復、原生資料夾選擇器、Loop 表達式；macOS & Windows 通用
+- v1.0.0 — 初版
+- Bundle ID: `com.marcy.pngseq`
 - 支援格式 / Format: PNG 序列 / PNG sequences
+- 平台 / Platform: **macOS · Windows**（After Effects 2019–2025+）

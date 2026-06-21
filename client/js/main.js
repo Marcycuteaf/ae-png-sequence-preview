@@ -9,14 +9,17 @@
     var $ = function (id) { return document.getElementById(id); };
 
     var els = {
-        pick: $('pick'), clear: $('clear'), root: $('root'), tree: $('tree'), count: $('count'),
+        pick: $('pick'), folderInput: $('folderInput'), clear: $('clear'), root: $('root'), tree: $('tree'), count: $('count'),
         search: $('search'), expandAll: $('expandAll'), collapseAll: $('collapseAll'),
         frame: $('frame'), empty: $('empty'), name: $('name'), info: $('info'),
         slider: $('slider'), prev: $('prev'), play: $('play'), next: $('next'),
-        fps: $('fps'), autoplay: $('autoplay'), importBtn: $('import'), status: $('status'),
+        fps: $('fps'), autoplay: $('autoplay'), autoloop: $('autoloop'), loopBtn: $('loop'),
+        importBtn: $('import'), status: $('status'),
         theme: $('theme'), settings: $('settings'),
         cAccent: $('cAccent'), cAccent2: $('cAccent2'), cBg: $('cBg'), themeReset: $('themeReset')
     };
+
+    var IS_WIN = /Win/i.test(navigator.platform) || /Windows/i.test(navigator.userAgent);
 
     var state = {
         roots: [],            // 已載入的根路徑（持久化）
@@ -42,10 +45,48 @@
         cs.evalScript(fn + '(' + (args || []).map(q).join(',') + ')',
             function (ret) { cb(String(ret == null ? '' : ret)); });
     }
+    function normPath(p) {
+        return String(p).replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
+    }
+
+    // 跨平台 file://（修正 Windows 反斜線與磁碟代號）
     function fileURL(p) {
-        var parts = String(p).split('/');
-        for (var i = 0; i < parts.length; i++) parts[i] = encodeURIComponent(parts[i]);
-        return 'file://' + parts.join('/');
+        var s = String(p).replace(/\\/g, '/');
+        var parts = s.split('/').filter(function (x) { return x.length > 0; });
+        var out = [];
+        for (var i = 0; i < parts.length; i++) {
+            if (i === 0 && /^[a-zA-Z]:$/.test(parts[i])) out.push(parts[i]);
+            else out.push(encodeURIComponent(parts[i]));
+        }
+        return 'file:///' + out.join('/');
+    }
+
+    // 從 HTML 資料夾選擇器取得根目錄（Windows CEP 會提供 file.path）
+    function rootFromFileList(files) {
+        if (!files || !files.length) return null;
+        var f = files[0];
+        if (f.path && f.webkitRelativePath) {
+            var full = String(f.path);
+            var rel = String(f.webkitRelativePath).replace(/\//g, '\\');
+            var fullWin = full.replace(/\//g, '\\');
+            var idx = fullWin.lastIndexOf(rel);
+            if (idx >= 0) return fullWin.substring(0, idx).replace(/[\\\/]+$/, '');
+            var sep = Math.max(fullWin.lastIndexOf('\\'), fullWin.lastIndexOf('/'));
+            if (sep > 0) return fullWin.substring(0, sep);
+        }
+        return null;
+    }
+
+    function pickFolderNative(cb) {
+        if (!els.folderInput) { cb(null); return; }
+        els.folderInput.value = '';
+        els.folderInput.onchange = function () {
+            var files = els.folderInput.files;
+            var root = rootFromFileList(files);
+            cb(root);
+            els.folderInput.onchange = null;
+        };
+        els.folderInput.click();
     }
 
     // ================= 持久化 =================
@@ -341,10 +382,19 @@
         if (!node) { setStatus('請先選擇序列', 'err'); return; }
         var fps = parseFloat(els.fps.value) || 0;
         var category = node.__rootName || '';
+        var doLoop = els.autoloop && els.autoloop.checked;
         setStatus('加入時間軸中…');
-        call('pngAddToTimeline', [node.first, node.name, fps, category], function (ret) {
+        call('pngAddToTimeline', [node.first, node.name, fps, category, doLoop], function (ret) {
             if (ret.indexOf('OK') === 0) setStatus('已加入：' + ret.slice(3), 'ok');
             else setStatus(ret.replace(/^ERR:?/, '') || '加入失敗', 'err');
+        });
+    }
+
+    function applyLoopToSelection() {
+        setStatus('套用 Loop…');
+        call('pngApplyLoop', [], function (ret) {
+            if (ret.indexOf('OK') === 0) setStatus(ret.slice(3), 'ok');
+            else setStatus(ret.replace(/^ERR:?/, '') || 'Loop 失敗', 'err');
         });
     }
 
@@ -352,7 +402,9 @@
     function addRoot(path, cb) {
         if (!path) { if (cb) cb(false); return; }
         for (var i = 0; i < state.roots.length; i++)
-            if (state.roots[i] === path) { setStatus('此資料夾已加入', 'err'); if (cb) cb(false); return; }
+            if (normPath(state.roots[i]) === normPath(path)) {
+                setStatus('此資料夾已加入', 'err'); if (cb) cb(false); return;
+            }
         setStatus('掃描中：' + path);
         call('pngTree', [path], function (ret) {
             if (ret.indexOf('ERR') === 0) { setStatus(ret.replace(/^ERR:?/, ''), 'err'); if (cb) cb(false); return; }
@@ -372,7 +424,8 @@
         var idx = -1;
         for (var i = 0; i < state.roots.length; i++) if (state.roots[i] === path) { idx = i; break; }
         if (idx === -1) return;
-        var removedHasCurrent = state.currentPath && state.currentPath.indexOf(path) === 0;
+        var removedHasCurrent = state.currentPath &&
+            (normPath(state.currentPath).indexOf(normPath(path)) === 0);
         state.roots.splice(idx, 1);
         state.forest.splice(idx, 1);
         saveRoots();
@@ -420,13 +473,31 @@
         })();
     }
 
-    // ================= 事件 =================
-    els.pick.addEventListener('click', function () {
-        call('pngPickFolder', [], function (path) {
-            if (!path) { setStatus('已取消'); return; }
-            addRoot(path);
+    function openFolderPicker() {
+        // Windows：優先用系統原生資料夾選擇器（大視窗、可一次選整包）
+        if (IS_WIN) {
+            pickFolderNative(function (root) {
+                if (root) { addRoot(root); return; }
+                setStatus('改用 AE 資料夾選擇…');
+                call('pngPickFolder', [], function (path) {
+                    if (!path) { setStatus('已取消'); return; }
+                    addRoot(path);
+                });
+            });
+            return;
+        }
+        // macOS：ExtendScript 選擇器體驗已足夠；若 CEP 有 file.path 也支援原生
+        pickFolderNative(function (root) {
+            if (root) { addRoot(root); return; }
+            call('pngPickFolder', [], function (path) {
+                if (!path) { setStatus('已取消'); return; }
+                addRoot(path);
+            });
         });
-    });
+    }
+
+    // ================= 事件 =================
+    els.pick.addEventListener('click', openFolderPicker);
     els.clear.addEventListener('click', clearAll);
     els.search.addEventListener('input', applyFilter);
     els.expandAll.addEventListener('click', function () { setAllExpanded(true); });
@@ -437,6 +508,7 @@
     els.slider.addEventListener('input', function () { stopPlay(); renderFrame(parseInt(els.slider.value, 10) || 0); });
     els.fps.addEventListener('change', function () { if (state.playing) { stopPlay(); startPlay(); } });
     els.importBtn.addEventListener('click', function () { importSeq(state.current); });
+    els.loopBtn.addEventListener('click', applyLoopToSelection);
     $('stage').addEventListener('dblclick', function () { if (state.current >= 0) importSeq(state.current); });
 
     document.addEventListener('keydown', function (e) {

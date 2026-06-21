@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest"><img src="https://img.shields.io/badge/Download-.zxp-5b9dff?style=for-the-badge" alt="Download"></a>
   <img src="https://img.shields.io/badge/After%20Effects-2019~2025+-9a6cff?style=for-the-badge" alt="AE">
-  <img src="https://img.shields.io/badge/Platform-macOS-39d98a?style=for-the-badge" alt="macOS">
+  <img src="https://img.shields.io/badge/Platform-macOS%20%7C%20Windows-39d98a?style=for-the-badge" alt="macOS & Windows">
 </p>
 
 <p align="center">
@@ -30,8 +30,20 @@
 
 ## 📥 Download / 下載 / ダウンロード / Скачать
 
-前往 **[Releases](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)** 下載最新的 `PNG-Sequence-Preview.zxp`，用 [aescripts ZXP Installer](https://aescripts.com/learn/zxp-installer/) 安裝即可。
-Grab the latest `PNG-Sequence-Preview.zxp` from **[Releases](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)** and install it with a ZXP installer.
+前往 **[Releases](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)**，依你的系統下載對應檔案：
+
+| 平台 Platform | 下載 Download |
+| --- | --- |
+| **macOS** | `PNG-Sequence-Preview-v1.0.1-macOS.zxp` 或 `-macOS.zip` |
+| **Windows** | `PNG-Sequence-Preview-v1.0.1-Windows.zxp` 或 `-Windows.zip` |
+
+> 兩個 ZXP **內容相同**（通用 CEP 擴充），檔名僅方便辨識平台。用 [aescripts ZXP Installer](https://aescripts.com/learn/zxp-installer/) 安裝後重啟 AE 即可。
+> Both ZXP files are **identical** (universal CEP); filenames are labeled for clarity. Install with a ZXP installer and restart AE.
+
+### v1.0.1 更新
+- 🪟 **Windows**：修正 PNG 序列預覽無法顯示（路徑 / file URL）
+- 🪟 **Windows**：改用系統原生資料夾選擇器（大視窗）
+- 🔁 新增 **Loop** 按鈕與「自動 Loop」選項（`loopOut("cycle")`）
 
 ---
 
@@ -147,4 +159,4 @@ Grab the latest `PNG-Sequence-Preview.zxp` from **[Releases](https://github.com/
 
 ---
 
-<p align="center"><sub>Bundle ID <code>com.marcy.pngseq</code> · v1.0.0 · Made with ♥ for motion designers</sub></p>
+<p align="center"><sub>Bundle ID <code>com.marcy.pngseq</code> · v1.0.1 · macOS &amp; Windows · Made with ♥ for motion designers</sub></p>

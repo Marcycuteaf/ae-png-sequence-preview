@@ -9,6 +9,7 @@
 <body>
     <div class="top">
         <button id="pick" class="btn-primary">➕ 加入資料夾</button>
+        <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
         <button id="clear" class="btn" title="清空全部">🗑</button>
         <button id="theme" class="btn" title="介面顏色">🎨</button>
         <div id="root" class="root" title="">尚未載入資料夾…</div>
@@ -58,6 +59,10 @@
                 <label class="autoplay" title="切換序列時自動播放">
                     <input id="autoplay" type="checkbox" checked> 自動播放
                 </label>
+                <label class="autoplay" title="加入時間軸時自動套用 loopOut 循環">
+                    <input id="autoloop" type="checkbox"> 自動 Loop
+                </label>
+                <button id="loop" class="btn" title="對時間軸選取圖層套用 loopOut(cycle)">🔁 Loop</button>
                 <button id="import" class="btn-primary" disabled>⬇ 加入時間軸</button>
             </div>
         </div>

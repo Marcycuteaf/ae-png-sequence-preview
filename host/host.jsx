@@ -140,8 +140,32 @@ function __pngFindFolder(nm) {
     return null;
 }
 
-// 匯入序列 → 歸入分類資料夾 → 加到目前合成的 current time
-function pngAddToTimeline(firstFrame, name, fps, category) {
+// 套用 loopOut 循環表達式到圖層
+function __pngApplyLoop(layer) {
+    layer.timeRemapEnabled = true;
+    var tr = layer.property("ADBE Time Remapping");
+    if (tr) tr.expression = 'loopOut("cycle")';
+}
+
+// 對目前合成中選取的圖層套用 Loop
+function pngApplyLoop() {
+    try {
+        var comp = app.project.activeItem;
+        if (!(comp && comp instanceof CompItem)) return "ERR:無作用中合成";
+        var sel = comp.selectedLayers;
+        if (!sel || sel.length === 0) return "ERR:請先選擇圖層";
+        app.beginUndoGroup("Loop 表達式");
+        for (var i = 0; i < sel.length; i++) __pngApplyLoop(sel[i]);
+        app.endUndoGroup();
+        return "OK:已套用 loopOut(cycle) × " + sel.length;
+    } catch (err) {
+        try { app.endUndoGroup(); } catch (e) {}
+        return "ERR:" + err.toString();
+    }
+}
+
+// 匯入序列 → 歸入分類資料夾 → 加到目前合成的 current time（可選 Loop）
+function pngAddToTimeline(firstFrame, name, fps, category, applyLoop) {
     try {
         var f = new File(firstFrame);
         if (!f.exists) return "ERR:檔案不存在：" + firstFrame;
@@ -169,10 +193,16 @@ function pngAddToTimeline(firstFrame, name, fps, category) {
         // 加到目前合成的 current time
         var note = " → 專案（無作用中合成）";
         var comp = app.project.activeItem;
+        var layer = null;
         if (comp && comp instanceof CompItem) {
-            var layer = comp.layers.add(item);
+            layer = comp.layers.add(item);
             try { layer.startTime = comp.time; } catch (e3) {}
-            note = " → 時間軸 @ " + comp.time.toFixed(2) + "s";
+            if (applyLoop === true || applyLoop === "true") {
+                try { __pngApplyLoop(layer); note = " → 時間軸 @ " + comp.time.toFixed(2) + "s + Loop"; }
+                catch (eLoop) { note = " → 時間軸 @ " + comp.time.toFixed(2) + "s"; }
+            } else {
+                note = " → 時間軸 @ " + comp.time.toFixed(2) + "s";
+            }
         }
 
         app.endUndoGroup();
