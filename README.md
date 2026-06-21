@@ -36,7 +36,8 @@ Browse, preview, and add PNG sequences to the After Effects timeline.
 
 | Version | Notes |
 | --- | --- |
-| **1.0.4** | Windows folder picker fix · Shift+click debug |
+| **1.0.5** | In-panel language switch (zh-TW · zh-CN · en · ja) |
+| 1.0.4 | Windows folder picker fix · Shift+click debug |
 | 1.0.3 | Windows picker temp-file output |
 | 1.0.2 | Explorer-style folder dialog |
 | 1.0.1 | Windows preview fix · Loop button |

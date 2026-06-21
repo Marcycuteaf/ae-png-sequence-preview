@@ -3,39 +3,40 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PNG 序列預覽</title>
+    <title>PNG Sequence Preview</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
     <div class="top">
-        <button id="pick" class="btn-primary" title="Windows：Explorer 大視窗｜Shift+點擊=除錯">➕ 加入資料夾</button>
+        <select id="langSelect" class="lang-select" data-i18n-title="langTitle"></select>
+        <button id="pick" class="btn-primary" data-i18n="pick" data-i18n-title="pickTitle"></button>
         <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
-        <button id="clear" class="btn" title="清空全部">🗑</button>
-        <button id="theme" class="btn" title="介面顏色">🎨</button>
-        <div id="root" class="root" title="">尚未載入資料夾…</div>
+        <button id="clear" class="btn" data-i18n-title="clearTitle">🗑</button>
+        <button id="theme" class="btn" data-i18n-title="themeTitle">🎨</button>
+        <div id="root" class="root" title=""></div>
     </div>
 
     <div id="settings" class="settings" style="display:none">
-        <label>主色 <input type="color" id="cAccent" value="#5b9dff"></label>
-        <label>副色 <input type="color" id="cAccent2" value="#9a6cff"></label>
-        <label>背景 <input type="color" id="cBg" value="#232323"></label>
+        <label><span data-i18n="colorPrimary"></span> <input type="color" id="cAccent" value="#5b9dff"></label>
+        <label><span data-i18n="colorSecondary"></span> <input type="color" id="cAccent2" value="#9a6cff"></label>
+        <label><span data-i18n="colorBg"></span> <input type="color" id="cBg" value="#232323"></label>
         <span class="presets">
             <i class="swatch" data-a="#5b9dff" data-b="#9a6cff" style="background:linear-gradient(90deg,#5b9dff,#9a6cff)"></i>
             <i class="swatch" data-a="#39d98a" data-b="#2bb673" style="background:linear-gradient(90deg,#39d98a,#2bb673)"></i>
             <i class="swatch" data-a="#ff8a5b" data-b="#ff5b9d" style="background:linear-gradient(90deg,#ff8a5b,#ff5b9d)"></i>
             <i class="swatch" data-a="#f5c542" data-b="#ff8a5b" style="background:linear-gradient(90deg,#f5c542,#ff8a5b)"></i>
         </span>
-        <button id="themeReset" class="mini">重設</button>
+        <button id="themeReset" class="mini" data-i18n="reset"></button>
     </div>
 
     <div class="main">
         <div class="side">
             <div class="side-head">
-                <input id="search" class="search" type="text" placeholder="🔍 搜尋序列名稱…">
+                <input id="search" class="search" type="text" data-i18n-ph="searchPh">
                 <div class="side-tools">
-                    <span id="count" class="badge">0 序列</span>
-                    <button id="expandAll" class="mini" title="全部展開">⊞</button>
-                    <button id="collapseAll" class="mini" title="全部收合">⊟</button>
+                    <span id="count" class="badge">0</span>
+                    <button id="expandAll" class="mini" data-i18n-title="expandAll">⊞</button>
+                    <button id="collapseAll" class="mini" data-i18n-title="collapseAll">⊟</button>
                 </div>
             </div>
             <div id="tree" class="tree"></div>
@@ -44,33 +45,34 @@
         <div class="preview">
             <div id="stage" class="stage">
                 <img id="frame" alt="">
-                <div id="empty" class="empty">選擇左側序列後在此預覽<br>切換時會自動播放，雙擊即可加入時間軸</div>
+                <div id="empty" class="empty" data-i18n="emptyPreview" data-i18n-html="1"></div>
             </div>
             <div id="name" class="name">—</div>
-            <div id="info" class="info">0 / 0 格</div>
+            <div id="info" class="info">0 / 0</div>
             <input id="slider" class="slider" type="range" min="0" max="0" value="0" disabled>
             <div class="controls">
-                <button id="prev" class="btn" disabled title="上一個序列">◀</button>
-                <button id="play" class="btn" disabled>▶ 播放</button>
-                <button id="next" class="btn" disabled title="下一個序列">▶</button>
+                <button id="prev" class="btn" disabled data-i18n-title="prevTitle">◀</button>
+                <button id="play" class="btn" disabled data-i18n="play"></button>
+                <button id="next" class="btn" disabled data-i18n-title="nextTitle">▶</button>
                 <label class="fps">FPS
                     <input id="fps" type="number" min="1" max="120" value="12">
                 </label>
-                <label class="autoplay" title="切換序列時自動播放">
-                    <input id="autoplay" type="checkbox" checked> 自動播放
+                <label class="autoplay" data-i18n-title="autoplayTitle">
+                    <input id="autoplay" type="checkbox" checked> <span data-i18n="autoplay"></span>
                 </label>
-                <label class="autoplay" title="加入時間軸時自動套用 loopOut 循環">
-                    <input id="autoloop" type="checkbox"> 自動 Loop
+                <label class="autoplay" data-i18n-title="autoloopTitle">
+                    <input id="autoloop" type="checkbox"> <span data-i18n="autoloop"></span>
                 </label>
-                <button id="loop" class="btn" title="對時間軸選取圖層套用 loopOut(cycle)">🔁 Loop</button>
-                <button id="import" class="btn-primary" disabled>⬇ 加入時間軸</button>
+                <button id="loop" class="btn" data-i18n="loop" data-i18n-title="loopTitle"></button>
+                <button id="import" class="btn-primary" disabled data-i18n="import"></button>
             </div>
         </div>
     </div>
 
-    <div id="status" class="status">準備就緒</div>
+    <div id="status" class="status"></div>
 
     <script src="./js/lib/CSInterface.js"></script>
+    <script src="./js/i18n.js"></script>
     <script src="./js/main.js"></script>
 </body>
 </html>

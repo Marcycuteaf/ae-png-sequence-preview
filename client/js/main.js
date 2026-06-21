@@ -9,6 +9,7 @@
     var $ = function (id) { return document.getElementById(id); };
 
     var els = {
+        langSelect: $('langSelect'),
         pick: $('pick'), folderInput: $('folderInput'), clear: $('clear'), root: $('root'), tree: $('tree'), count: $('count'),
         search: $('search'), expandAll: $('expandAll'), collapseAll: $('collapseAll'),
         frame: $('frame'), empty: $('empty'), name: $('name'), info: $('info'),
@@ -32,6 +33,46 @@
         frames: [], frameIdx: 0, playing: false, timer: null
     };
 
+    function t(key, vars) { return I18n.t(key, vars); }
+    function errMsg(ret) { return I18n.hostErr(ret); }
+
+    function initLangSelect() {
+        if (!els.langSelect) return;
+        els.langSelect.innerHTML = '';
+        var langs = I18n.LANGS;
+        for (var i = 0; i < langs.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = langs[i];
+            opt.textContent = I18n.LABELS[langs[i]];
+            els.langSelect.appendChild(opt);
+        }
+        els.langSelect.value = I18n.getLang();
+        els.langSelect.addEventListener('change', function () {
+            I18n.setLang(els.langSelect.value);
+            applyLanguage();
+        });
+    }
+
+    function applyLanguage() {
+        I18n.applyDOM();
+        if (els.langSelect) els.langSelect.value = I18n.getLang();
+        updateRootLabel();
+        if (els.search.value.trim()) applyFilter();
+        else els.count.textContent = t('seqCount', { n: state.seqList.length });
+        els.play.textContent = state.playing ? t('pause') : t('play');
+        if (state.frames.length) {
+            els.info.textContent = t('frames', { i: state.frameIdx + 1, n: state.frames.length });
+        } else {
+            els.info.textContent = t('frames', { i: 0, n: 0 });
+        }
+        var rms = els.tree.querySelectorAll('.rm');
+        for (var r = 0; r < rms.length; r++) rms[r].title = t('removeRoot');
+    }
+
+    function pickDialogArgs() {
+        return [t('pickDialog'), t('pickHint')];
+    }
+
     function setStatus(msg, type) {
         els.status.textContent = msg;
         els.status.className = 'status ' + (type || '');
@@ -41,7 +82,7 @@
         return "'" + String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
     }
     function call(fn, args, cb) {
-        if (!cs) { setStatus('未偵測到 After Effects 環境', 'err'); return; }
+        if (!cs) { setStatus(t('noAe'), 'err'); return; }
         cs.evalScript(fn + '(' + (args || []).map(q).join(',') + ')',
             function (ret) { cb(String(ret == null ? '' : ret)); });
     }
@@ -127,19 +168,19 @@
 
     function runDiag() {
         call('pngDiag', [], function (ret) {
-            setStatus(ret.indexOf('OK:') === 0 ? ('除錯：' + ret.slice(3)) : ret, ret.indexOf('OK:') === 0 ? 'ok' : 'err');
+            setStatus(ret.indexOf('OK:') === 0 ? t('diag', { info: ret.slice(3) }) : errMsg(ret), ret.indexOf('OK:') === 0 ? 'ok' : 'err');
         });
     }
 
     function pickExplorer(cb) {
-        setStatus('正在開啟 Explorer 大視窗…');
-        call('pngPickFolder', [], function (path) {
+        setStatus(t('openingExplorer'));
+        call('pngPickFolder', pickDialogArgs(), function (path) {
             cb(path);
         });
     }
 
     function pickNativeFallback(cb) {
-        setStatus('正在開啟系統資料夾選擇器…');
+        setStatus(t('openingNative'));
         pickFolderNative(function (root, reason) {
             cb(root, reason);
         });
@@ -189,9 +230,9 @@
     function onThemeChange() { var t = currentTheme(); applyTheme(t); saveTheme(t); }
 
     function updateRootLabel() {
-        if (state.roots.length === 0) { els.root.textContent = '尚未載入資料夾…'; els.root.title = ''; }
+        if (state.roots.length === 0) { els.root.textContent = t('noFolders'); els.root.title = ''; }
         else {
-            els.root.textContent = '已載入 ' + state.roots.length + ' 個資料夾';
+            els.root.textContent = t('foldersLoaded', { n: state.roots.length });
             els.root.title = state.roots.join('\n');
         }
     }
@@ -205,7 +246,7 @@
         for (var i = 0; i < state.forest.length; i++)
             frag.appendChild(renderNode(state.forest[i], 0, { isRoot: true, rootName: state.forest[i].name }));
         els.tree.appendChild(frag);
-        els.count.textContent = state.seqList.length + ' 序列';
+        els.count.textContent = t('seqCount', { n: state.seqList.length });
         updateRootLabel();
         relocateCurrent();
         // 預設展開每個根的第一層
@@ -259,7 +300,7 @@
             var rm = document.createElement('span');
             rm.className = 'rm';
             rm.textContent = '✕';
-            rm.title = '移除此資料夾';
+            rm.title = t('removeRoot');
             rm.addEventListener('click', function (e) {
                 e.stopPropagation();
                 removeRoot(node.path);
@@ -320,7 +361,7 @@
         var nodes = els.tree.querySelectorAll('.node');
         if (!qstr) {
             for (var i = 0; i < nodes.length; i++) nodes[i].style.display = '';
-            els.count.textContent = state.seqList.length + ' 序列';
+            els.count.textContent = t('seqCount', { n: state.seqList.length });
             return;
         }
         for (var k = 0; k < nodes.length; k++) nodes[k].style.display = 'none';
@@ -336,7 +377,7 @@
             }
             expandTo(node);
         }
-        els.count.textContent = matched + ' / ' + state.seqList.length + ' 序列';
+        els.count.textContent = t('seqMatch', { m: matched, n: state.seqList.length });
     }
 
     // ================= 選取與播放 =================
@@ -371,12 +412,12 @@
         els.name.textContent = node.name;
         els.importBtn.disabled = false;
         els.prev.disabled = els.next.disabled = state.seqList.length <= 1;
-        setStatus('載入：' + node.name);
+        setStatus(t('loading', { name: node.name }));
 
         if (state.framesCache[node.path]) onFrames(node, state.framesCache[node.path]);
         else call('pngFrames', [node.path], function (ret) {
-            if (ret.indexOf('ERR') === 0) { setStatus(ret.replace(/^ERR:?/, ''), 'err'); return; }
-            var frames; try { frames = JSON.parse(ret); } catch (e) { setStatus('解析失敗', 'err'); return; }
+            if (ret.indexOf('ERR') === 0) { setStatus(errMsg(ret), 'err'); return; }
+            var frames; try { frames = JSON.parse(ret); } catch (e) { setStatus(t('parseFail'), 'err'); return; }
             state.framesCache[node.path] = frames;
             onFrames(node, frames);
         });
@@ -392,7 +433,7 @@
         els.slider.disabled = frames.length <= 1;
         els.play.disabled = frames.length <= 1;
         renderFrame(0);
-        setStatus(node.name + ' — ' + frames.length + ' 格', 'ok');
+        setStatus(t('seqLoaded', { name: node.name, n: frames.length }), 'ok');
         if (els.autoplay.checked && frames.length > 1) startPlay();
     }
 
@@ -405,7 +446,7 @@
         els.frame.style.display = 'block';
         els.empty.style.display = 'none';
         els.slider.value = idx;
-        els.info.textContent = (idx + 1) + ' / ' + state.frames.length + ' 格';
+        els.info.textContent = t('frames', { i: idx + 1, n: state.frames.length });
     }
 
     function tick() {
@@ -416,12 +457,12 @@
     function startPlay() {
         if (state.frames.length <= 1) return;
         var fps = parseFloat(els.fps.value) || 12; if (fps < 1) fps = 1;
-        state.playing = true; els.play.textContent = '⏸ 暫停';
+        state.playing = true; els.play.textContent = t('pause');
         clearInterval(state.timer);
         state.timer = setInterval(tick, 1000 / fps);
     }
     function stopPlay() {
-        state.playing = false; els.play.textContent = '▶ 播放';
+        state.playing = false; els.play.textContent = t('play');
         clearInterval(state.timer); state.timer = null;
     }
     function togglePlay() { if (state.playing) stopPlay(); else startPlay(); }
@@ -435,22 +476,22 @@
     function importSeq(idx) {
         if (idx == null) idx = state.current;
         var node = state.seqList[idx];
-        if (!node) { setStatus('請先選擇序列', 'err'); return; }
+        if (!node) { setStatus(t('selectSeqFirst'), 'err'); return; }
         var fps = parseFloat(els.fps.value) || 0;
         var category = node.__rootName || '';
         var doLoop = els.autoloop && els.autoloop.checked;
-        setStatus('加入時間軸中…');
+        setStatus(t('adding'));
         call('pngAddToTimeline', [node.first, node.name, fps, category, doLoop], function (ret) {
-            if (ret.indexOf('OK') === 0) setStatus('已加入：' + ret.slice(3), 'ok');
-            else setStatus(ret.replace(/^ERR:?/, '') || '加入失敗', 'err');
+            if (ret.indexOf('OK') === 0) setStatus(t('added', { msg: ret.slice(3) }), 'ok');
+            else setStatus(errMsg(ret) || t('addFail'), 'err');
         });
     }
 
     function applyLoopToSelection() {
-        setStatus('套用 Loop…');
+        setStatus(t('applyingLoop'));
         call('pngApplyLoop', [], function (ret) {
-            if (ret.indexOf('OK') === 0) setStatus(ret.slice(3), 'ok');
-            else setStatus(ret.replace(/^ERR:?/, '') || 'Loop 失敗', 'err');
+            if (ret.indexOf('OK') === 0) setStatus(I18n.hostOk(ret), 'ok');
+            else setStatus(errMsg(ret) || t('loopFail'), 'err');
         });
     }
 
@@ -459,17 +500,17 @@
         if (!path) { if (cb) cb(false); return; }
         for (var i = 0; i < state.roots.length; i++)
             if (normPath(state.roots[i]) === normPath(path)) {
-                setStatus('此資料夾已加入', 'err'); if (cb) cb(false); return;
+                setStatus(t('folderExists'), 'err'); if (cb) cb(false); return;
             }
-        setStatus('掃描中：' + path);
+        setStatus(t('scanning', { path: path }));
         call('pngTree', [path], function (ret) {
-            if (ret.indexOf('ERR') === 0) { setStatus(ret.replace(/^ERR:?/, ''), 'err'); if (cb) cb(false); return; }
-            var tree; try { tree = JSON.parse(ret); } catch (e) { setStatus('解析失敗：' + e, 'err'); if (cb) cb(false); return; }
+            if (ret.indexOf('ERR') === 0) { setStatus(errMsg(ret), 'err'); if (cb) cb(false); return; }
+            var tree; try { tree = JSON.parse(ret); } catch (e) { setStatus(t('parseFail'), 'err'); if (cb) cb(false); return; }
             state.roots.push(path);
             state.forest.push(tree);
             saveRoots();
             buildForest();
-            setStatus('已加入：' + tree.name + '（共 ' + state.seqList.length + ' 序列）', 'ok');
+            setStatus(t('addedRoot', { name: tree.name, n: state.seqList.length }), 'ok');
             els.clear.disabled = false;
             if (state.current < 0 && state.seqList.length > 0) selectSeq(0);
             if (cb) cb(true);
@@ -488,7 +529,7 @@
         if (removedHasCurrent) { stopPlay(); state.current = -1; state.currentPath = ''; clearPreview(); }
         buildForest();
         els.clear.disabled = state.roots.length === 0;
-        setStatus(state.roots.length ? '已移除一個資料夾' : '已清空', '');
+        setStatus(state.roots.length ? t('removedOne') : t('cleared'), '');
     }
 
     function clearAll() {
@@ -497,18 +538,18 @@
         state.current = -1; state.currentPath = '';
         saveRoots();
         els.tree.innerHTML = '';
-        els.count.textContent = '0 序列';
+        els.count.textContent = t('seqCount', { n: 0 });
         clearPreview();
         updateRootLabel();
         els.clear.disabled = true;
-        setStatus('已清空全部資料夾');
+        setStatus(t('clearedAll'));
     }
 
     function clearPreview() {
         els.frame.style.display = 'none';
         els.empty.style.display = 'block';
         els.name.textContent = '—';
-        els.info.textContent = '0 / 0 格';
+        els.info.textContent = t('frames', { i: 0, n: 0 });
         els.play.disabled = els.importBtn.disabled = els.slider.disabled = true;
         els.prev.disabled = els.next.disabled = true;
     }
@@ -517,12 +558,12 @@
     function restoreRoots() {
         var saved = loadSavedRoots();
         if (!saved.length) { els.clear.disabled = true; return; }
-        setStatus('還原上次的 ' + saved.length + ' 個資料夾…');
+        setStatus(t('restoring', { n: saved.length }));
         var i = 0;
         (function nextOne() {
             if (i >= saved.length) {
                 if (state.seqList.length > 0) selectSeq(0);
-                else setStatus('上次的資料夾已不存在或無序列', 'err');
+                else setStatus(t('restoreFail'), 'err');
                 return;
             }
             addRoot(saved[i++], function () { nextOne(); });
@@ -538,12 +579,12 @@
                 if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
                     addRoot(path); return;
                 }
-                var err = (path && path.indexOf('ERR:') === 0) ? path.replace(/^ERR:?/, '') : '';
-                if (err) setStatus('Explorer：' + err + ' → 改用備用', 'err');
-                else setStatus('Explorer 已取消 → 改用備用');
+                var err = (path && path.indexOf('ERR:') === 0) ? errMsg(path) : '';
+                if (err) setStatus(t('explorerErr', { err: err }), 'err');
+                else setStatus(t('explorerFallback'));
                 pickNativeFallback(function (root, reason) {
                     if (root) { addRoot(root); return; }
-                    setStatus('已取消 (' + (reason || 'none') + ')', 'err');
+                    setStatus(t('cancelledReason', { reason: reason || 'none' }), 'err');
                 });
             });
             return;
@@ -551,8 +592,8 @@
         // macOS
         pickNativeFallback(function (root) {
             if (root) { addRoot(root); return; }
-            call('pngPickFolder', [], function (path) {
-                if (!path) { setStatus('已取消'); return; }
+            call('pngPickFolder', pickDialogArgs(), function (path) {
+                if (!path) { setStatus(t('cancelled')); return; }
                 addRoot(path);
             });
         });
@@ -597,7 +638,9 @@
     }
 
     // 初始化
+    initLangSelect();
+    applyLanguage();
     applyTheme(loadTheme() || DEFAULT_THEME);
-    setStatus('準備就緒');
+    setStatus(t('ready'));
     restoreRoots();
 })();

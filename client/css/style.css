@@ -33,6 +33,14 @@ body { display: flex; flex-direction: column; padding: 8px; gap: 8px; }
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     direction: rtl; text-align: left;
 }
+.lang-select {
+    flex: 0 0 auto; max-width: 96px;
+    background: var(--panel2); color: var(--txt);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 4px; font-family: inherit; font-size: 11px;
+    cursor: pointer;
+}
+.lang-select:focus { border-color: var(--accent); outline: none; }
 
 /* 設定列（介面顏色）*/
 .settings {

@@ -86,11 +86,16 @@ function __pngHostLog(msg) {
 }
 
 // Windows：Explorer 大視窗（結果寫暫存檔 + 除錯日誌）
-function pngPickFolderWindows() {
+function pngPickFolderWindows(pickTitle, pickHint) {
+    pickTitle = pickTitle ? String(pickTitle) : "Select folder containing PNG sequences";
+    pickHint = pickHint ? String(pickHint) : "Select this folder";
+    // PowerShell 字串跳脫
+    pickTitle = pickTitle.replace(/'/g, "''");
+    pickHint = pickHint.replace(/'/g, "''");
     var script = null, outFile = null, logFile = null;
     try {
         if (typeof system === "undefined" || !system.callSystem) {
-            return "ERR:system.callSystem 不可用（請確認 AE 偏好設定允許腳本）";
+            return "ERR:system_unavailable";
         }
         var tempDir = Folder.temp.fsName.replace(/\\/g, "/");
         outFile = new File(tempDir + "/pngseq_pick_out.txt");
@@ -113,12 +118,12 @@ function pngPickFolderWindows() {
         script.writeln("  Add-Type -AssemblyName System.Drawing");
         script.writeln("  [System.Windows.Forms.Application]::EnableVisualStyles()");
         script.writeln("  $d = New-Object System.Windows.Forms.OpenFileDialog");
-        script.writeln("  $d.Title = 'Select folder containing PNG sequences'");
+        script.writeln("  $d.Title = '" + pickTitle + "'");
         script.writeln("  $d.Filter = 'Folder|*.none'");
         script.writeln("  $d.ValidateNames = $false");
         script.writeln("  $d.CheckFileExists = $false");
         script.writeln("  $d.CheckPathExists = $true");
-        script.writeln("  $d.FileName = 'Select this folder'");
+        script.writeln("  $d.FileName = '" + pickHint + "'");
         script.writeln("  if ($env:USERPROFILE) { $d.InitialDirectory = $env:USERPROFILE }");
         script.writeln("  Log 'ShowDialog...'");
         script.writeln("  $form = New-Object System.Windows.Forms.Form");
@@ -159,7 +164,7 @@ function pngPickFolderWindows() {
             if (result && result.length > 0) {
                 var folder = new Folder(result);
                 if (folder.exists) return folder.fsName;
-                return "ERR:資料夾不存在：" + result;
+                return "ERR:folder_not_found:" + result;
             }
         }
         if (logText.indexOf("ERROR:") >= 0) {
@@ -183,12 +188,13 @@ function pngDiag() {
 }
 
 // 選擇資料夾，回傳 fsName 或空字串
-function pngPickFolder() {
+function pngPickFolder(pickTitle, pickHint) {
     try {
         if ($.os.indexOf("Windows") >= 0) {
-            return pngPickFolderWindows();
+            return pngPickFolderWindows(pickTitle, pickHint);
         }
-        var f = Folder.selectDialog("選擇含有 PNG 序列的資料夾");
+        var title = pickTitle ? String(pickTitle) : "Select folder containing PNG sequences";
+        var f = Folder.selectDialog(title);
         return f ? f.fsName : "";
     } catch (e) { return ""; }
 }
@@ -197,7 +203,7 @@ function pngPickFolder() {
 function pngTree(rootPath) {
     try {
         var root = new Folder(rootPath);
-        if (!root.exists) return "ERR:資料夾不存在";
+        if (!root.exists) return "ERR:folder_not_found";
 
         function node(folder) {
             var pngs = __pngList(folder);
@@ -229,7 +235,7 @@ function pngTree(rootPath) {
 function pngFrames(dir) {
     try {
         var folder = new Folder(dir);
-        if (!folder.exists) return "ERR:資料夾不存在";
+        if (!folder.exists) return "ERR:folder_not_found";
         var pngs = __pngList(folder);
         var arr = [];
         for (var i = 0; i < pngs.length; i++) arr.push(__pngJstr(pngs[i].fsName));
@@ -260,13 +266,13 @@ function __pngApplyLoop(layer) {
 function pngApplyLoop() {
     try {
         var comp = app.project.activeItem;
-        if (!(comp && comp instanceof CompItem)) return "ERR:無作用中合成";
+        if (!(comp && comp instanceof CompItem)) return "ERR:no_active_comp";
         var sel = comp.selectedLayers;
-        if (!sel || sel.length === 0) return "ERR:請先選擇圖層";
-        app.beginUndoGroup("Loop 表達式");
+        if (!sel || sel.length === 0) return "ERR:select_layer_first";
+        app.beginUndoGroup("Loop");
         for (var i = 0; i < sel.length; i++) __pngApplyLoop(sel[i]);
         app.endUndoGroup();
-        return "OK:已套用 loopOut(cycle) × " + sel.length;
+        return "OK:loop:" + sel.length;
     } catch (err) {
         try { app.endUndoGroup(); } catch (e) {}
         return "ERR:" + err.toString();
@@ -277,8 +283,8 @@ function pngApplyLoop() {
 function pngAddToTimeline(firstFrame, name, fps, category, applyLoop) {
     try {
         var f = new File(firstFrame);
-        if (!f.exists) return "ERR:檔案不存在：" + firstFrame;
-        if (!app || !app.project) return "ERR:找不到 AE 專案";
+        if (!f.exists) return "ERR:file_not_found:" + firstFrame;
+        if (!app || !app.project) return "ERR:no_project";
 
         app.beginUndoGroup("新增 PNG 序列到時間軸");
 
@@ -326,8 +332,8 @@ function pngAddToTimeline(firstFrame, name, fps, category, applyLoop) {
 function pngImport(firstFrame, name, fps) {
     try {
         var f = new File(firstFrame);
-        if (!f.exists) return "ERR:檔案不存在：" + firstFrame;
-        if (!app || !app.project) return "ERR:找不到 AE 專案";
+        if (!f.exists) return "ERR:file_not_found:" + firstFrame;
+        if (!app || !app.project) return "ERR:no_project";
 
         app.beginUndoGroup("導入 PNG 序列");
         var io = new ImportOptions(f);
