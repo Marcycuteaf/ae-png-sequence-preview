@@ -6,7 +6,7 @@
 
 ### Browse, preview, and import PNG sequences into the After Effects timeline
 
-[![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)
+[![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.8)
 [![Languages](https://img.shields.io/badge/Languages-4-ff4757?style=for-the-badge&labelColor=8b0000)](docs/readme/en.md)
 
 After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
@@ -23,8 +23,8 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Platform | File |
 | --- | --- |
-| macOS | `PNG-Sequence-Preview-v1.0.7-macOS.zxp` |
-| Windows | `PNG-Sequence-Preview-v1.0.7-Windows.zxp` |
+| macOS | [`PNG-Sequence-Preview-v1.0.8-macOS.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.8/PNG-Sequence-Preview-v1.0.8-macOS.zxp) |
+| Windows | [`PNG-Sequence-Preview-v1.0.8-Windows.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.8/PNG-Sequence-Preview-v1.0.8-Windows.zxp) |
 
 1. Install with [ZXP Installer](https://aescripts.com/learn/zxp-installer/)
 2. Restart After Effects
@@ -62,9 +62,9 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | | 完整版 | Lite |
 |---|--------|------|
-| 版本 | 1.0.6 | Lite 1.0.0 |
+| 版本 | [1.0.8](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.8) | [Lite 1.0.3](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/lite-v1.0.3) |
 | 語言 | TC / SC / EN / 日本語 | 繁中固定 |
-| 主題 | 可自訂 | 固定深色 |
+| 主題 | 可自訂 | 跟隨 AE 面板 |
 
 打包：`./package-lite.sh` → `dist/lite/`
 
