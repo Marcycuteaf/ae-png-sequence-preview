@@ -15,7 +15,7 @@ var I18n = (function () {
     var STR = {
         'zh-TW': {
             pick: '➕ 加入資料夾',
-            pickTitle: 'Windows：Explorer 大視窗｜Shift+點擊=除錯',
+            pickTitle: 'Shift+點擊=除錯',
             clearTitle: '清空全部',
             themeTitle: '介面顏色',
             langTitle: '語言',
@@ -82,7 +82,7 @@ var I18n = (function () {
         },
         'zh-CN': {
             pick: '➕ 添加文件夹',
-            pickTitle: 'Windows：Explorer 大窗口｜Shift+点击=调试',
+            pickTitle: 'Shift+点击=调试',
             clearTitle: '清空全部',
             themeTitle: '界面颜色',
             langTitle: '语言',
@@ -149,7 +149,7 @@ var I18n = (function () {
         },
         'en': {
             pick: '➕ Add folder',
-            pickTitle: 'Windows: Explorer dialog · Shift+click = debug',
+            pickTitle: 'Shift+click = debug',
             clearTitle: 'Clear all',
             themeTitle: 'Theme colors',
             langTitle: 'Language',
@@ -216,7 +216,7 @@ var I18n = (function () {
         },
         'ja': {
             pick: '➕ フォルダー追加',
-            pickTitle: 'Windows：Explorer 大ウィンドウ｜Shift+クリック=デバッグ',
+            pickTitle: 'Shift+クリック=デバッグ',
             clearTitle: 'すべてクリア',
             themeTitle: 'UI 配色',
             langTitle: '言語',

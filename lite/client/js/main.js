@@ -116,6 +116,25 @@
         }, 2000);
     }
 
+    function cepFsAvailable() {
+        return !!(window.cep && window.cep.fs && typeof window.cep.fs.showOpenDialog === 'function');
+    }
+
+    function pickFolderCep() {
+        var title = '選擇 PNG 序列資料夾';
+        var fs = window.cep.fs;
+        var result;
+        try {
+            if (typeof fs.showOpenDialogEx === 'function') {
+                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Open');
+            } else {
+                result = fs.showOpenDialog(false, true, title, '', []);
+            }
+        } catch (e) { return null; }
+        if (result && result.data && result.data.length > 0) return result.data[0];
+        return null;
+    }
+
     function pickExplorer(cb) {
         setStatus('開啟資料夾…');
         call('pngPickFolder', ['選擇 PNG 序列資料夾', '選擇此資料夾'], cb);
@@ -483,6 +502,14 @@
     }
 
     function openFolderPicker() {
+        if (cepFsAvailable()) {
+            setStatus('開啟資料夾…');
+            var path = pickFolderCep();
+            if (path) { addRoot(path); return; }
+            setStatus('已取消');
+            return;
+        }
+
         if (IS_WIN) {
             pickExplorer(function (path) {
                 if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {

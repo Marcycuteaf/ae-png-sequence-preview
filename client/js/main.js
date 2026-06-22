@@ -166,6 +166,26 @@
         }, 2000);
     }
 
+    function cepFsAvailable() {
+        return !!(window.cep && window.cep.fs && typeof window.cep.fs.showOpenDialog === 'function');
+    }
+
+    // 與 BEN CODE 相同：CEP 原生 OS 對話框（Windows Explorer 大視窗）
+    function pickFolderCep() {
+        var title = t('pickDialog');
+        var fs = window.cep.fs;
+        var result;
+        try {
+            if (typeof fs.showOpenDialogEx === 'function') {
+                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Open');
+            } else {
+                result = fs.showOpenDialog(false, true, title, '', []);
+            }
+        } catch (e) { return null; }
+        if (result && result.data && result.data.length > 0) return result.data[0];
+        return null;
+    }
+
     function runDiag() {
         call('pngDiag', [], function (ret) {
             setStatus(ret.indexOf('OK:') === 0 ? t('diag', { info: ret.slice(3) }) : errMsg(ret), ret.indexOf('OK:') === 0 ? 'ok' : 'err');
@@ -573,19 +593,26 @@
     function openFolderPicker(e) {
         if (e && e.shiftKey) { runDiag(); return; }
 
+        // 優先：cep.fs 原生資料夾對話框（與 BEN CODE 選圖相同 API）
+        if (cepFsAvailable()) {
+            setStatus(t('openingExplorer'));
+            var cepPath = pickFolderCep();
+            if (cepPath) { addRoot(cepPath); return; }
+            setStatus(t('cancelled'));
+            return;
+        }
+
+        // 備用：ExtendScript / HTML（cep.fs 不可用時）
         if (IS_WIN) {
-            // Windows：優先 Explorer 大視窗（PowerShell OpenFileDialog）
             pickExplorer(function (path) {
                 if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
                     addRoot(path); return;
                 }
-                // 使用者取消 → 不再自動開啟 CEP 小視窗
                 if (!path || path.length === 0) {
                     setStatus(t('cancelled')); return;
                 }
                 var err = errMsg(path);
                 setStatus(t('explorerErr', { err: err }), 'err');
-                // 僅在 PowerShell 失敗時才用 CEP 備用選取器
                 pickNativeFallback(function (root, reason) {
                     if (root) { addRoot(root); return; }
                     setStatus(t('cancelledReason', { reason: reason || 'none' }), 'err');
@@ -593,7 +620,6 @@
             });
             return;
         }
-        // macOS
         pickNativeFallback(function (root) {
             if (root) { addRoot(root); return; }
             call('pngPickFolder', pickDialogArgs(), function (path) {
