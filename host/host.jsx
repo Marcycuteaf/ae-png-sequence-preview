@@ -116,6 +116,18 @@ function pngPickFolderWindows(pickTitle, pickHint) {
         script.writeln("try {");
         script.writeln("  Add-Type -AssemblyName System.Windows.Forms");
         script.writeln("  Add-Type -AssemblyName System.Drawing");
+        script.writeln("  Add-Type @'");
+        script.writeln("using System;");
+        script.writeln("using System.Runtime.InteropServices;");
+        script.writeln("public class PngSeqWin {");
+        script.writeln("  [DllImport(\"user32.dll\")] public static extern IntPtr GetForegroundWindow();");
+        script.writeln("}");
+        script.writeln("public class Win32Window : System.Windows.Forms.IWin32Window {");
+        script.writeln("  IntPtr _h;");
+        script.writeln("  public Win32Window(IntPtr h) { _h = h; }");
+        script.writeln("  public IntPtr Handle { get { return _h; } }");
+        script.writeln("}");
+        script.writeln("'@");
         script.writeln("  [System.Windows.Forms.Application]::EnableVisualStyles()");
         script.writeln("  $d = New-Object System.Windows.Forms.OpenFileDialog");
         script.writeln("  $d.Title = '" + pickTitle + "'");
@@ -124,15 +136,15 @@ function pngPickFolderWindows(pickTitle, pickHint) {
         script.writeln("  $d.CheckFileExists = $false");
         script.writeln("  $d.CheckPathExists = $true");
         script.writeln("  $d.FileName = '" + pickHint + "'");
+        script.writeln("  $d.AutoUpgradeEnabled = $true");
         script.writeln("  if ($env:USERPROFILE) { $d.InitialDirectory = $env:USERPROFILE }");
-        script.writeln("  Log 'ShowDialog...'");
-        script.writeln("  $form = New-Object System.Windows.Forms.Form");
-        script.writeln("  $form.TopMost = $true");
-        script.writeln("  $form.WindowState = 'Minimized'");
-        script.writeln("  $form.Show()");
-        script.writeln("  $form.Hide()");
-        script.writeln("  $r = $d.ShowDialog($form)");
-        script.writeln("  $form.Close()");
+        script.writeln("  Log 'ShowDialog (owner=foreground)...'");
+        script.writeln("  $owner = New-Object Win32Window ([PngSeqWin]::GetForegroundWindow())");
+        script.writeln("  $r = $d.ShowDialog($owner)");
+        script.writeln("  if ($r -ne [System.Windows.Forms.DialogResult]::OK) {");
+        script.writeln("    Log 'Retry ShowDialog without owner...'");
+        script.writeln("    $r = $d.ShowDialog()");
+        script.writeln("  }");
         script.writeln("  Log ('Dialog result: ' + $r)");
         script.writeln("  if ($r -eq [System.Windows.Forms.DialogResult]::OK) {");
         script.writeln("    $p = [System.IO.Path]::GetDirectoryName($d.FileName)");
@@ -146,8 +158,7 @@ function pngPickFolderWindows(pickTitle, pickHint) {
         script.close();
 
         var ps1 = script.fsName.replace(/\//g, "\\");
-        // start /wait 確保等對話框關閉
-        var cmd = 'cmd.exe /c start /wait "" powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Normal -File "' + ps1 + '"';
+        var cmd = 'powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + ps1 + '"';
         __pngHostLog("cmd: " + cmd);
         system.callSystem(cmd);
 
@@ -178,13 +189,25 @@ function pngPickFolderWindows(pickTitle, pickHint) {
     }
 }
 
-// 除錯：回傳環境資訊
+// 除錯：回傳環境資訊 + 最近一次選資料夾日誌
 function pngDiag() {
     var hasSys = (typeof system !== "undefined" && system.callSystem);
+    var pickLog = "";
+    try {
+        var lf = new File(Folder.temp.fsName.replace(/\\/g, "/") + "/pngseq_pick_log.txt");
+        if (lf.exists) {
+            lf.open("r");
+            pickLog = lf.read();
+            lf.close();
+            if (pickLog.length > 400) pickLog = pickLog.substring(pickLog.length - 400);
+            pickLog = pickLog.replace(/\r?\n/g, " | ");
+        }
+    } catch (e) {}
     return "OK:os=" + $.os +
         ";ae=" + app.name + " " + app.version +
         ";system=" + hasSys +
-        ";temp=" + (Folder.temp ? Folder.temp.fsName : "none");
+        ";temp=" + (Folder.temp ? Folder.temp.fsName : "none") +
+        ";pickLog=" + (pickLog || "none");
 }
 
 // 選擇資料夾，回傳 fsName 或空字串

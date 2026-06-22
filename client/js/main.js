@@ -574,14 +574,18 @@
         if (e && e.shiftKey) { runDiag(); return; }
 
         if (IS_WIN) {
-            // Windows：優先 Explorer 大視窗
+            // Windows：優先 Explorer 大視窗（PowerShell OpenFileDialog）
             pickExplorer(function (path) {
                 if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
                     addRoot(path); return;
                 }
-                var err = (path && path.indexOf('ERR:') === 0) ? errMsg(path) : '';
-                if (err) setStatus(t('explorerErr', { err: err }), 'err');
-                else setStatus(t('explorerFallback'));
+                // 使用者取消 → 不再自動開啟 CEP 小視窗
+                if (!path || path.length === 0) {
+                    setStatus(t('cancelled')); return;
+                }
+                var err = errMsg(path);
+                setStatus(t('explorerErr', { err: err }), 'err');
+                // 僅在 PowerShell 失敗時才用 CEP 備用選取器
                 pickNativeFallback(function (root, reason) {
                     if (root) { addRoot(root); return; }
                     setStatus(t('cancelledReason', { reason: reason || 'none' }), 'err');
