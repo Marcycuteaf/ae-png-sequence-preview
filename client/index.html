@@ -5,26 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PNG Sequence Preview</title>
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/icons.css">
 </head>
 <body>
-    <div class="top">
+    <div class="toolbar">
         <select id="langSelect" class="lang-select" data-i18n-title="langTitle"></select>
-        <button id="pick" class="btn-primary" data-i18n="pick" data-i18n-title="pickTitle"></button>
+        <button id="pick" class="btn-accent btn-with-ico" data-i18n-title="pickTitle">
+            <span class="btn-label" data-i18n="pick"></span>
+        </button>
         <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
-        <button id="clear" class="btn" data-i18n-title="clearTitle">🗑</button>
-        <button id="theme" class="btn" data-i18n-title="themeTitle">🎨</button>
+        <button id="clear" class="btn btn-icon" data-i18n-title="clearTitle"></button>
+        <button id="theme" class="btn btn-icon" data-i18n-title="themeTitle"></button>
         <div id="root" class="root" title=""></div>
     </div>
 
     <div id="settings" class="settings" style="display:none">
-        <label><span data-i18n="colorPrimary"></span> <input type="color" id="cAccent" value="#5b9dff"></label>
-        <label><span data-i18n="colorSecondary"></span> <input type="color" id="cAccent2" value="#9a6cff"></label>
-        <label><span data-i18n="colorBg"></span> <input type="color" id="cBg" value="#232323"></label>
+        <label><span data-i18n="colorPrimary"></span> <input type="color" id="cAccent" value="#2d8ceb"></label>
+        <label><span data-i18n="colorSecondary"></span> <input type="color" id="cAccent2" value="#2d8ceb"></label>
+        <label><span data-i18n="colorBg"></span> <input type="color" id="cBg" value="#323232"></label>
         <span class="presets">
-            <i class="swatch" data-a="#5b9dff" data-b="#9a6cff" style="background:linear-gradient(90deg,#5b9dff,#9a6cff)"></i>
-            <i class="swatch" data-a="#39d98a" data-b="#2bb673" style="background:linear-gradient(90deg,#39d98a,#2bb673)"></i>
-            <i class="swatch" data-a="#ff8a5b" data-b="#ff5b9d" style="background:linear-gradient(90deg,#ff8a5b,#ff5b9d)"></i>
-            <i class="swatch" data-a="#f5c542" data-b="#ff8a5b" style="background:linear-gradient(90deg,#f5c542,#ff8a5b)"></i>
+            <i class="swatch" data-a="#2d8ceb" data-b="#2d8ceb" style="background:#2d8ceb" title="AE Blue"></i>
+            <i class="swatch" data-a="#6e6e6e" data-b="#6e6e6e" style="background:#6e6e6e" title="Gray"></i>
+            <i class="swatch" data-a="#5a5a5a" data-b="#5a5a5a" style="background:#5a5a5a" title="Dark Gray"></i>
+            <i class="swatch" data-a="#888888" data-b="#888888" style="background:#888888" title="Light Gray"></i>
         </span>
         <button id="themeReset" class="mini" data-i18n="reset"></button>
     </div>
@@ -32,12 +35,37 @@
     <div class="main">
         <div class="side">
             <div class="side-head">
-                <input id="search" class="search" type="text" data-i18n-ph="searchPh">
+                <div class="search-wrap">
+                    <input id="search" class="search" type="text" data-i18n-ph="searchPh">
+                </div>
                 <div class="side-tools">
                     <span id="count" class="badge">0</span>
-                    <button id="expandAll" class="mini" data-i18n-title="expandAll">⊞</button>
-                    <button id="collapseAll" class="mini" data-i18n-title="collapseAll">⊟</button>
+                    <button id="expandAll" class="mini btn btn-icon" data-i18n-title="expandAll"></button>
+                    <button id="collapseAll" class="mini btn btn-icon" data-i18n-title="collapseAll"></button>
                 </div>
+            </div>
+            <div class="batch-bar">
+                <label class="chk-label">
+                    <input id="selectAll" type="checkbox">
+                    <span data-i18n="selectAll"></span>
+                </label>
+                <span id="selectedCount" class="badge badge-accent">0</span>
+                <button id="exportAlpha" class="btn-accent btn-sm btn-with-ico" disabled data-i18n-title="exportAlphaTitle">
+                    <span class="btn-label" data-i18n="exportAlpha"></span>
+                </button>
+            </div>
+            <div class="export-out">
+                <span class="export-out-label" data-i18n="exportOutLabel"></span>
+                <span id="exportOutPath" class="export-out-path" title=""></span>
+                <button id="exportOutOpen" class="mini btn btn-sm btn-with-ico" data-i18n-title="exportOutOpenTitle">
+                    <span class="btn-label" data-i18n="exportOutOpen"></span>
+                </button>
+                <button id="exportOutPick" class="mini btn btn-sm" data-i18n-title="exportOutPickTitle">
+                    <span class="btn-label" data-i18n="exportOutPick"></span>
+                </button>
+                <button id="exportOutReset" class="mini btn btn-sm" data-i18n-title="exportOutResetTitle">
+                    <span class="btn-label" data-i18n="exportOutReset"></span>
+                </button>
             </div>
             <div id="tree" class="tree"></div>
         </div>
@@ -47,24 +75,45 @@
                 <img id="frame" alt="">
                 <div id="empty" class="empty" data-i18n="emptyPreview" data-i18n-html="1"></div>
             </div>
-            <div id="name" class="name">—</div>
-            <div id="info" class="info">0 / 0</div>
+            <div class="meta">
+                <div id="name" class="name">—</div>
+                <div id="info" class="info">0 / 0</div>
+            </div>
             <input id="slider" class="slider" type="range" min="0" max="0" value="0" disabled>
-            <div class="controls">
-                <button id="prev" class="btn" disabled data-i18n-title="prevTitle">◀</button>
-                <button id="play" class="btn" disabled data-i18n="play"></button>
-                <button id="next" class="btn" disabled data-i18n-title="nextTitle">▶</button>
+            <div class="transport">
+                <button id="prev" class="btn btn-step" disabled data-i18n-title="prevTitle"></button>
+                <button id="play" class="btn btn-play" disabled data-i18n-title="playTitle">
+                    <span class="btn-label" data-i18n="play"></span>
+                </button>
+                <button id="next" class="btn btn-step" disabled data-i18n-title="nextTitle"></button>
                 <label class="fps">FPS
                     <input id="fps" type="number" min="1" max="120" value="12">
                 </label>
-                <label class="autoplay" data-i18n-title="autoplayTitle">
-                    <input id="autoplay" type="checkbox" checked> <span data-i18n="autoplay"></span>
+            </div>
+            <div class="opt-row">
+                <label data-i18n-title="autoplayTitle">
+                    <input id="autoplay" type="checkbox" checked>
+                    <span data-i18n="autoplay"></span>
                 </label>
-                <label class="autoplay" data-i18n-title="autoloopTitle">
-                    <input id="autoloop" type="checkbox"> <span data-i18n="autoloop"></span>
+                <label data-i18n-title="autoloopTitle">
+                    <input id="autoloop" type="checkbox">
+                    <span data-i18n="autoloop"></span>
                 </label>
-                <button id="loop" class="btn" data-i18n="loop" data-i18n-title="loopTitle"></button>
-                <button id="import" class="btn-primary" disabled data-i18n="import"></button>
+                <button id="loop" class="btn btn-sm btn-with-ico" data-i18n-title="loopTitle">
+                    <span class="btn-label" data-i18n="loop"></span>
+                </button>
+            </div>
+            <div class="action-row">
+                <button id="gifToPng" class="btn btn-sm btn-with-ico" disabled data-i18n-title="gifToPngTitle">
+                    <span class="btn-label" data-i18n="gifToPng"></span>
+                </button>
+                <select id="importMode" class="import-mode" data-i18n-title="importModeTitle">
+                    <option value="timeline" data-i18n="importModeTimeline"></option>
+                    <option value="project" data-i18n="importModeProject"></option>
+                </select>
+                <button id="import" class="btn-accent btn-with-ico" disabled data-i18n-title="importTitle">
+                    <span class="btn-label" data-i18n="import"></span>
+                </button>
             </div>
         </div>
     </div>
@@ -72,7 +121,9 @@
     <div id="status" class="status"></div>
 
     <script src="./js/lib/CSInterface.js"></script>
+    <script src="./js/icons.js"></script>
     <script src="./js/i18n.js"></script>
+    <script src="./js/ffmpeg-export.js"></script>
     <script src="./js/main.js"></script>
 </body>
 </html>

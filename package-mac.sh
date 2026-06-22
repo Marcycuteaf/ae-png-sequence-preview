@@ -9,7 +9,7 @@ SIGN="$ROOT/tools/ZXPSignCmd"
 CERT="$ROOT/tools/bencode-cert.p12"
 PASS="bencode"
 STAGE="$HERE/dist/staging"
-VER="1.0.8"
+VER="1.0.9"
 BASE="PNG-Sequence-Preview-v${VER}"
 DIST="$HERE/dist"
 ZXP="$DIST/${BASE}.zxp"
@@ -19,12 +19,23 @@ if [ ! -x "$SIGN" ]; then
   echo "找不到 $SIGN，請先下載 Adobe ZXPSignCmd。"; exit 1
 fi
 
-echo "==> 準備乾淨的打包內容 (僅 CSXS/client/host)"
+echo "==> 準備乾淨的打包內容 (CSXS/client/host + bin/ffmpeg)"
 rm -rf "$STAGE"
 mkdir -p "$STAGE"
 cp -R "$HERE/CSXS" "$STAGE/"
 cp -R "$HERE/client" "$STAGE/"
 cp -R "$HERE/host" "$STAGE/"
+if [ -x "$HERE/bin/macos/ffmpeg" ]; then
+  mkdir -p "$STAGE/bin/macos" "$STAGE/bin/win"
+  cp -f "$HERE/bin/macos/ffmpeg" "$STAGE/bin/macos/ffmpeg"
+  chmod +x "$STAGE/bin/macos/ffmpeg"
+  [ -d "$HERE/bin/macos/lib" ] && cp -R "$HERE/bin/macos/lib" "$STAGE/bin/macos/" || true
+  [ -f "$HERE/bin/win/ffmpeg.exe" ] && cp -f "$HERE/bin/win/ffmpeg.exe" "$STAGE/bin/win/" || true
+  cp -f "$HERE/bin/README.txt" "$STAGE/bin/" 2>/dev/null || true
+  echo "    ✓ bin/ffmpeg 已包含"
+else
+  echo "    ⚠ 未找到 bin/macos/ffmpeg — 請先執行 ./scripts/fetch-ffmpeg-mac.sh"
+fi
 find "$STAGE" -name '.DS_Store' -delete 2>/dev/null || true
 
 echo "==> 產生自簽章憑證 (如不存在)"

@@ -1,6 +1,12 @@
 # 建置產物（zxp/zip 以 GitHub Release 形式發佈，不入庫）
 dist/
 
+# 內建 ffmpeg 二進位（打包前用 scripts/fetch-ffmpeg-mac.sh 產生）
+bin/macos/ffmpeg
+bin/macos/lib/
+bin/win/ffmpeg.exe
+
 # 系統檔
 .DS_Store
 **/.DS_Store
+.debug

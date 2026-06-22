@@ -6,7 +6,7 @@
 
 ### Browse, preview, and import PNG sequences into the After Effects timeline
 
-[![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.8)
+[![Download](https://img.shields.io/github/v/release/Marcycuteaf/ae-png-sequence-preview?style=for-the-badge&color=dc143c&labelColor=4a0000&label=Download)](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.9)
 [![Languages](https://img.shields.io/badge/Languages-4-ff4757?style=for-the-badge&labelColor=8b0000)](docs/readme/en.md)
 
 After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
@@ -23,8 +23,8 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Platform | File |
 | --- | --- |
-| macOS | [`PNG-Sequence-Preview-v1.0.8-macOS.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.8/PNG-Sequence-Preview-v1.0.8-macOS.zxp) |
-| Windows | [`PNG-Sequence-Preview-v1.0.8-Windows.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.8/PNG-Sequence-Preview-v1.0.8-Windows.zxp) |
+| macOS | [`PNG-Sequence-Preview-v1.0.9-macOS.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.9/PNG-Sequence-Preview-v1.0.9-macOS.zxp) |
+| Windows | [`PNG-Sequence-Preview-v1.0.9-Windows.zxp`](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/download/v1.0.9/PNG-Sequence-Preview-v1.0.9-Windows.zxp) |
 
 1. Install with [ZXP Installer](https://aescripts.com/learn/zxp-installer/)
 2. Restart After Effects
@@ -45,6 +45,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Version | Notes |
 | --- | --- |
+| **1.0.9** | GIF preview & convert · Alpha batch export · custom output folder · auto-import to timeline · folder persistence · SVG icons · bundled ffmpeg (macOS + Windows) |
 | **1.0.8** | macOS folder picker — ExtendScript Folder.selectDialog + cep.fs fallback |
 | **1.0.7** | Windows folder picker — use `cep.fs.showOpenDialog` (same as BEN CODE) |
 | **1.0.6** | Windows folder picker fix — reliable Explorer dialog, no small fallback on cancel |
@@ -62,7 +63,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | | 完整版 | Lite |
 |---|--------|------|
-| 版本 | [1.0.8](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.8) | [Lite 1.0.3](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/lite-v1.0.3) |
+| 版本 | [1.0.9](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.9) | [Lite 1.0.3](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/lite-v1.0.3) |
 | 語言 | TC / SC / EN / 日本語 | 繁中固定 |
 | 主題 | 可自訂 | 跟隨 AE 面板 |
 
