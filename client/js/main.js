@@ -393,6 +393,13 @@
     function normPath(p) {
         return String(p).replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
     }
+    function findRootIndex(path) {
+        var np = normPath(path);
+        for (var i = 0; i < state.roots.length; i++) {
+            if (normPath(state.roots[i]) === np) return i;
+        }
+        return -1;
+    }
 
     // 跨平台 file://（修正 Windows 反斜線與磁碟代號）
     function fileURL(p) {
@@ -766,7 +773,9 @@
             rm.className = 'rm';
             rm.title = t('removeRoot');
             Icons.into(rm, 'close');
+            rm.addEventListener('mousedown', function (e) { e.stopPropagation(); });
             rm.addEventListener('click', function (e) {
+                e.preventDefault();
                 e.stopPropagation();
                 removeRoot(node.path);
             });
@@ -1152,7 +1161,7 @@
                 if (cb) cb(false);
                 return;
             }
-            state.roots.push(path);
+            state.roots.push(tree.path || path);
             state.forest.push(tree);
             if (opts.persist !== false) saveRoots();
             buildForest();
@@ -1164,18 +1173,18 @@
     }
 
     function removeRoot(path) {
-        var idx = -1;
-        for (var i = 0; i < state.roots.length; i++) if (state.roots[i] === path) { idx = i; break; }
+        var idx = findRootIndex(path);
         if (idx === -1) return;
+        var rootPath = state.roots[idx];
         var removedHasCurrent = state.currentPath &&
-            (normPath(state.currentPath).indexOf(normPath(path)) === 0);
+            (normPath(state.currentPath).indexOf(normPath(rootPath)) === 0);
         state.roots.splice(idx, 1);
         state.forest.splice(idx, 1);
         saveRoots();
         if (removedHasCurrent) { stopPlay(); state.current = -1; state.currentPath = ''; clearPreview(); }
-        delete state.selected[path];
+        var rootNorm = normPath(rootPath);
         for (var k in state.selected) {
-            if (state.selected.hasOwnProperty(k) && normPath(k).indexOf(normPath(path)) === 0) delete state.selected[k];
+            if (state.selected.hasOwnProperty(k) && normPath(k).indexOf(rootNorm) === 0) delete state.selected[k];
         }
         buildForest();
         els.clear.disabled = state.roots.length === 0;

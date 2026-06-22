@@ -272,10 +272,14 @@ select.import-mode:focus { border-color: var(--accent); }
     padding: 0 4px;
     border-radius: 3px;
     font-size: 10px;
-    opacity: 0;
+    opacity: 0.55;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
 }
 .row:hover .rm { opacity: 1; }
 .rm:hover { color: var(--err); background: var(--panel); }
+.rm .ico-svg { pointer-events: none; }
 
 .children { display: none; }
 .children.open { display: block; }
