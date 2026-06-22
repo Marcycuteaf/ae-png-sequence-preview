@@ -2,7 +2,7 @@
 
 Расширение After Effects — просмотр PNG-секвенций, превью, добавление на таймлайн
 
-[← README](../../README.md) · [TC](zh-TW.md) · [English](en.md) · [日本語](ja.md)
+[← README](../../README.md) · [TC](zh-TC.md) · [English](en.md) · [日本語](ja.md)
 
 <p align="center">
   <img src="../ui-main-v104.png" alt="Интерфейс панели" width="420">
@@ -38,6 +38,20 @@
 1. Скачайте `.zxp` из [Releases](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest)
 2. Установите через [ZXP Installer](https://aescripts.com/learn/zxp-installer/)
 3. Перезапустите AE → **Window → Extensions → PNG 序列預覽**
+
+---
+
+## Важно (v1.0.9)
+
+| Тема | Примечание |
+| --- | --- |
+| Установка | Используйте **.zxp из Releases** (в исходниках нет ffmpeg) |
+| GIF | Только превью; на таймлайн — через **GIF → PNG**, затем импорт |
+| Alpha | Отметьте секвенции → **Export Alpha Video**; по умолчанию `_AlphaExport/` |
+| Папки | **Add folder** добавляет в дерево; пути сохраняются между сессиями |
+| Windows | **Shift + Add folder** — диагностика |
+
+Подробнее: [TC](zh-TC.md#注意事項) · [English](en.md#important-notes)
 
 ---
 

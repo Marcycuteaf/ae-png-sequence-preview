@@ -32,9 +32,28 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 ---
 
+## ⚠️ Important notes / 使用前必讀
+
+> Full details: **[TC 注意事項](docs/readme/zh-TC.md#注意事項)** · **[English notes](docs/readme/en.md#important-notes)**
+
+| Topic | What to know |
+| --- | --- |
+| **Install** | Use the **Release `.zxp`**, not the GitHub source zip — only the ZXP includes bundled ffmpeg. Restart AE after install. |
+| **Load folders** | Click **Add folder** to browse sequences. The panel remembers folders next time; large packs may take a minute to scan. |
+| **GIF** | GIF can be **previewed** but **cannot go to timeline directly** — use **GIF → PNG** first, then import. |
+| **Alpha export** | Check sequences on the left, set FPS, click **Export Alpha Video**. Default output: `_AlphaExport/` beside the sequence, or pick a custom folder. |
+| **Output folder ≠ browse folder** | Setting **Output to** saves the export path only. v1.0.9 also adds that folder to the tree automatically; otherwise use **Add folder**. |
+| **Import mode** | Dropdown: **Timeline** (add at playhead) or **Project only**. Applies to PNG import and post-GIF conversion. |
+| **ffmpeg** | ZXP ships ffmpeg (~55 MB). If Alpha/GIF export fails on macOS, install system ffmpeg: `brew install ffmpeg`. AE render queue is used as fallback for Alpha. |
+| **Windows** | Folder picker uses the native Explorer dialog. **Shift + Add folder** shows debug info. |
+| **macOS** | Add folder uses the system folder dialog. Dev symlink installs need `PlayerDebugMode` (see manual). |
+| **Disk space** | GIF → PNG writes frames next to the source GIF. Batch Alpha export can produce large `.mov` files. |
+
+---
+
 ## Documentation
 
-- [TC](docs/readme/zh-TW.md)
+- [TC](docs/readme/zh-TC.md)
 - [English](docs/readme/en.md)
 - [日本語](docs/readme/ja.md)
 - [Русский](docs/readme/ru.md)
@@ -64,7 +83,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 | | 完整版 | Lite |
 |---|--------|------|
 | 版本 | [1.0.9](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/v1.0.9) | [Lite 1.0.3](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/tag/lite-v1.0.3) |
-| 語言 | TC / SC / EN / 日本語 | 繁中固定 |
+| 語言 | TC / SC / EN / 日本語 | TC 固定 |
 | 主題 | 可自訂 | 跟隨 AE 面板 |
 
 打包：`./package-lite.sh` → `dist/lite/`

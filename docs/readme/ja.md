@@ -2,7 +2,7 @@
 
 After Effects 拡張パネル — PNG シーケンスの閲覧・プレビュー・タイムライン追加
 
-[← README](../../README.md) · [TC](zh-TW.md) · [English](en.md) · [Русский](ru.md)
+[← README](../../README.md) · [TC](zh-TC.md) · [English](en.md) · [Русский](ru.md)
 
 <p align="center">
   <img src="../ui-main-v104.png" alt="パネル UI" width="420">
@@ -38,6 +38,20 @@ After Effects 拡張パネル — PNG シーケンスの閲覧・プレビュー
 1. [Releases](https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest) から `.zxp` をダウンロード
 2. [ZXP Installer](https://aescripts.com/learn/zxp-installer/) で導入
 3. AE 再起動 → **Window → Extensions → PNG 序列預覽**
+
+---
+
+## 注意事項（v1.0.9）
+
+| 項目 | 内容 |
+| --- | --- |
+| インストール | **Release の .zxp** を使用（ソース clone には ffmpeg 同梱なし） |
+| GIF | プレビュー可。**タイムライン直接追加不可** → **GIF → PNG** 後に取込 |
+| Alpha 出力 | 左でシーケンスにチェック → **Alpha 動画出力**；既定 `_AlphaExport/` |
+| フォルダー | **フォルダー追加**でツリーに表示；次回起動時に復元 |
+| Windows | **Shift + フォルダー追加**でデバッグ情報 |
+
+詳細：[TC](zh-TC.md#注意事項) · [English](en.md#important-notes)
 
 ---
 

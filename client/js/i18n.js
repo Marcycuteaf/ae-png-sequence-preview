@@ -3,17 +3,17 @@ var I18n = (function () {
     'use strict';
 
     var LANG_KEY = 'pngseq.lang.v1';
-    var DEFAULT = 'zh-TW';
+    var DEFAULT = 'zh-TC';
 
     var LABELS = {
-        'zh-TW': 'TC',
-        'zh-CN': 'SC',
+        'zh-TC': 'TC',
+        'zh-SC': 'SC',
         'en': 'English',
         'ja': '日本語'
     };
 
     var STR = {
-        'zh-TW': {
+        'zh-TC': {
             pick: '加入資料夾',
             pickTitle: 'Shift+點擊=除錯',
             clearTitle: '清空全部',
@@ -127,7 +127,7 @@ var I18n = (function () {
             'err.select_layer_first': '請先選擇圖層',
             'err.system_unavailable': 'system.callSystem 不可用（請確認 AE 偏好設定允許腳本）'
         },
-        'zh-CN': {
+        'zh-SC': {
             pick: '添加文件夹',
             pickTitle: 'Shift+点击=调试',
             clearTitle: '清空全部',
@@ -488,15 +488,22 @@ var I18n = (function () {
         return fmt(s, vars);
     }
 
+    function normalizeLang(code) {
+        if (code === 'zh-TW') return 'zh-TC';
+        if (code === 'zh-CN') return 'zh-SC';
+        return code;
+    }
+
     function detectLang() {
         try {
-            var saved = localStorage.getItem(LANG_KEY);
+            var saved = normalizeLang(localStorage.getItem(LANG_KEY));
             if (saved && STR[saved]) return saved;
         } catch (e) {}
         if (typeof navigator !== 'undefined') {
             var nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
-            if (nav.indexOf('zh-tw') >= 0 || nav.indexOf('zh-hant') >= 0) return 'zh-TW';
-            if (nav.indexOf('zh') >= 0) return 'zh-CN';
+            if (nav.indexOf('zh-hant') >= 0) return 'zh-TC';
+            if (nav.indexOf('zh-hans') >= 0 || nav.indexOf('zh-cn') >= 0) return 'zh-SC';
+            if (nav.indexOf('zh') >= 0) return 'zh-SC';
             if (nav.indexOf('ja') >= 0) return 'ja';
             if (nav.indexOf('en') >= 0) return 'en';
         }
@@ -506,11 +513,12 @@ var I18n = (function () {
     function getLang() { return lang; }
 
     function setLang(code) {
+        code = normalizeLang(code);
         if (!STR[code]) code = DEFAULT;
         lang = code;
         try { localStorage.setItem(LANG_KEY, code); } catch (e) {}
         if (typeof document !== 'undefined' && document.documentElement) {
-            document.documentElement.lang = code === 'zh-CN' ? 'zh-Hans' : (code === 'zh-TW' ? 'zh-Hant' : code);
+            document.documentElement.lang = code === 'zh-SC' ? 'zh-Hans' : (code === 'zh-TC' ? 'zh-Hant' : code);
         }
     }
 
@@ -568,6 +576,6 @@ var I18n = (function () {
     return {
         t: t, fmt: fmt, getLang: getLang, setLang: setLang, applyDOM: applyDOM,
         hostErr: hostErr, hostOk: hostOk, validate: validate,
-        LABELS: LABELS, LANGS: ['zh-TW', 'zh-CN', 'en', 'ja']
+        LABELS: LABELS, LANGS: ['zh-TC', 'zh-SC', 'en', 'ja']
     };
 })();
