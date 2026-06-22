@@ -23,8 +23,8 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Platform | File |
 | --- | --- |
-| macOS | `PNG-Sequence-Preview-v1.0.5-macOS.zxp` |
-| Windows | `PNG-Sequence-Preview-v1.0.5-Windows.zxp` |
+| macOS | `PNG-Sequence-Preview-v1.0.6-macOS.zxp` |
+| Windows | `PNG-Sequence-Preview-v1.0.6-Windows.zxp` |
 
 1. Install with [ZXP Installer](https://aescripts.com/learn/zxp-installer/)
 2. Restart After Effects
@@ -45,6 +45,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Version | Notes |
 | --- | --- |
+| **1.0.6** | Windows folder picker fix — reliable Explorer dialog, no small fallback on cancel |
 | **1.0.5** | In-panel language switch (TC · SC · en · ja) |
 | 1.0.4 | Windows folder picker fix · Shift+click debug |
 | 1.0.3 | Windows picker temp-file output |

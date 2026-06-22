@@ -119,6 +119,7 @@ An After Effects (CEP) panel that lets you browse nested folders full of PNG seq
 
 ## 七、版本 / Version
 
+- **v1.0.6** — Windows 資料夾選取器修復（Explorer 大視窗更穩定、取消後不再跳小視窗）
 - **v1.0.1** — Windows 預覽修復、原生資料夾選擇器、Loop 表達式；macOS & Windows 通用
 - v1.0.0 — 初版
 - Bundle ID: `com.marcy.pngseq`
