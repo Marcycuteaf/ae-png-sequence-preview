@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="demo-page-root">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PNG Sequence Preview — Interactive Demo</title>
+    <meta name="description" content="Try PNG Sequence Preview in your browser. Browse PNG sequences, preview GIFs, and explore the After Effects panel UI without installing AE.">
+    <link rel="stylesheet" href="../../client/css/style.css">
+    <link rel="stylesheet" href="../../client/css/icons.css">
+    <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+<div class="demo-page">
+    <header class="demo-header">
+        <h1>PNG Sequence Preview</h1>
+        <p>
+            Interactive browser demo — explore the panel UI, preview sample sequences, or load your own folder.
+            Import / export / GIF convert are <strong>simulated</strong> (full features require After Effects).
+        </p>
+        <div class="demo-badges">
+            <span class="demo-badge">TC / SC / EN / 日本語</span>
+            <span class="demo-badge">↑↓ sequences · ←→ frames · Space play</span>
+            <span class="demo-badge">Load local PNG / GIF folder</span>
+        </div>
+        <div class="demo-links">
+            <a href="https://github.com/Marcycuteaf/ae-png-sequence-preview/releases/latest" target="_blank" rel="noopener">Download ZXP</a>
+            <a href="../../README.md">README</a>
+            <a href="../readme/zh-TC.md">TC 注意事項</a>
+        </div>
+    </header>
+
+    <div class="demo-panel-wrap" id="demoPanel">
+        <div class="toolbar">
+            <select id="langSelect" class="lang-select" data-i18n-title="langTitle"></select>
+            <button id="pick" class="btn-accent btn-with-ico" data-i18n-title="pickTitle">
+                <span class="btn-label" data-i18n="pick"></span>
+            </button>
+            <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+            <button id="clear" class="btn btn-icon" data-i18n-title="clearTitle"></button>
+            <button id="theme" class="btn btn-icon" data-i18n-title="themeTitle"></button>
+            <div id="root" class="root" title=""></div>
+        </div>
+
+        <div id="settings" class="settings" style="display:none">
+            <label><span data-i18n="colorPrimary"></span> <input type="color" id="cAccent" value="#2d8ceb"></label>
+            <label><span data-i18n="colorSecondary"></span> <input type="color" id="cAccent2" value="#2d8ceb"></label>
+            <label><span data-i18n="colorBg"></span> <input type="color" id="cBg" value="#323232"></label>
+            <button id="themeReset" class="mini" data-i18n="reset"></button>
+        </div>
+
+        <div class="main">
+            <div class="side">
+                <div class="side-head">
+                    <div class="search-wrap">
+                        <input id="search" class="search" type="text" data-i18n-ph="searchPh">
+                    </div>
+                    <div class="side-tools">
+                        <span id="count" class="badge">0</span>
+                        <button id="expandAll" class="mini btn btn-icon" data-i18n-title="expandAll"></button>
+                        <button id="collapseAll" class="mini btn btn-icon" data-i18n-title="collapseAll"></button>
+                    </div>
+                </div>
+                <div class="batch-bar">
+                    <label class="chk-label">
+                        <input id="selectAll" type="checkbox">
+                        <span data-i18n="selectAll"></span>
+                    </label>
+                    <span id="selectedCount" class="badge badge-accent">0</span>
+                    <button id="exportAlpha" class="btn-accent btn-sm btn-with-ico" disabled data-i18n-title="exportAlphaTitle">
+                        <span class="btn-label" data-i18n="exportAlpha"></span>
+                    </button>
+                </div>
+                <div class="export-out">
+                    <span class="export-out-label" data-i18n="exportOutLabel"></span>
+                    <span id="exportOutPath" class="export-out-path" data-i18n="exportOutBesideSeq" title=""></span>
+                    <button id="exportOutReset" class="mini btn btn-sm" data-i18n-title="exportOutResetTitle">
+                        <span class="btn-label" data-i18n="exportOutReset"></span>
+                    </button>
+                </div>
+                <div id="tree" class="tree"></div>
+            </div>
+
+            <div class="preview">
+                <div id="stage" class="stage">
+                    <img id="frame" alt="">
+                    <div id="empty" class="empty" data-i18n="emptyPreview" data-i18n-html="1"></div>
+                </div>
+                <div class="meta">
+                    <div id="name" class="name">—</div>
+                    <div id="info" class="info">0 / 0</div>
+                </div>
+                <input id="slider" class="slider" type="range" min="0" max="0" value="0" disabled>
+                <div class="transport">
+                    <button id="prev" class="btn btn-step" disabled data-i18n-title="prevTitle"></button>
+                    <button id="play" class="btn btn-play" disabled data-i18n-title="playTitle">
+                        <span class="btn-label" data-i18n="play"></span>
+                    </button>
+                    <button id="next" class="btn btn-step" disabled data-i18n-title="nextTitle"></button>
+                    <label class="fps">FPS
+                        <input id="fps" type="number" min="1" max="120" value="12">
+                    </label>
+                </div>
+                <div class="opt-row">
+                    <label data-i18n-title="autoplayTitle">
+                        <input id="autoplay" type="checkbox" checked>
+                        <span data-i18n="autoplay"></span>
+                    </label>
+                    <label data-i18n-title="autoloopTitle">
+                        <input id="autoloop" type="checkbox">
+                        <span data-i18n="autoloop"></span>
+                    </label>
+                    <button id="loop" class="btn btn-sm btn-with-ico" data-i18n-title="loopTitle">
+                        <span class="btn-label" data-i18n="loop"></span>
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button id="gifToPng" class="btn btn-sm btn-with-ico" disabled data-i18n-title="gifToPngTitle">
+                        <span class="btn-label" data-i18n="gifToPng"></span>
+                    </button>
+                    <select id="importMode" class="import-mode" data-i18n-title="importModeTitle">
+                        <option value="timeline" data-i18n="importModeTimeline"></option>
+                        <option value="project" data-i18n="importModeProject"></option>
+                    </select>
+                    <button id="import" class="btn-accent btn-with-ico" disabled data-i18n-title="importTitle">
+                        <span class="btn-label" data-i18n="import"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+</div>
+
+<div id="demoToast" class="demo-toast" role="status" aria-live="polite"></div>
+
+<script src="../../client/js/i18n.js"></script>
+<script src="../../client/js/icons.js"></script>
+<script src="./demo.js"></script>
+</body>
+</html>
