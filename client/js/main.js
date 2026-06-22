@@ -170,20 +170,41 @@
         return !!(window.cep && window.cep.fs && typeof window.cep.fs.showOpenDialog === 'function');
     }
 
-    // 與 BEN CODE 相同：CEP 原生 OS 對話框（Windows Explorer 大視窗）
+    // CEP 原生 OS 資料夾對話框（Windows 優先使用）
     function pickFolderCep() {
         var title = t('pickDialog');
         var fs = window.cep.fs;
         var result;
         try {
             if (typeof fs.showOpenDialogEx === 'function') {
-                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Open');
+                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Choose');
             } else {
                 result = fs.showOpenDialog(false, true, title, '', []);
             }
         } catch (e) { return null; }
-        if (result && result.data && result.data.length > 0) return result.data[0];
+        if (result && result.data && result.data.length > 0 &&
+            (result.err === undefined || result.err === 0)) {
+            return result.data[0];
+        }
         return null;
+    }
+
+    function pickFolderMac(cb) {
+        setStatus(t('openingExplorer'));
+        call('pngPickFolder', pickDialogArgs(), function (path) {
+            if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
+                cb(path);
+                return;
+            }
+            if (path && path.indexOf('ERR:') === 0) {
+                setStatus(errMsg(path), 'err');
+            }
+            if (cepFsAvailable()) {
+                var cepPath = pickFolderCep();
+                if (cepPath) { cb(cepPath); return; }
+            }
+            cb(null);
+        });
     }
 
     function runDiag() {
@@ -593,7 +614,16 @@
     function openFolderPicker(e) {
         if (e && e.shiftKey) { runDiag(); return; }
 
-        // 優先：cep.fs 原生資料夾對話框（與 BEN CODE 選圖相同 API）
+        // macOS：ExtendScript Folder.selectDialog（原生資料夾視窗，最穩）
+        if (!IS_WIN) {
+            pickFolderMac(function (path) {
+                if (path) { addRoot(path); return; }
+                setStatus(t('cancelled'));
+            });
+            return;
+        }
+
+        // Windows：cep.fs 原生對話框（與 BEN CODE 選圖相同 API）
         if (cepFsAvailable()) {
             setStatus(t('openingExplorer'));
             var cepPath = pickFolderCep();
@@ -602,29 +632,19 @@
             return;
         }
 
-        // 備用：ExtendScript / HTML（cep.fs 不可用時）
-        if (IS_WIN) {
-            pickExplorer(function (path) {
-                if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
-                    addRoot(path); return;
-                }
-                if (!path || path.length === 0) {
-                    setStatus(t('cancelled')); return;
-                }
-                var err = errMsg(path);
-                setStatus(t('explorerErr', { err: err }), 'err');
-                pickNativeFallback(function (root, reason) {
-                    if (root) { addRoot(root); return; }
-                    setStatus(t('cancelledReason', { reason: reason || 'none' }), 'err');
-                });
-            });
-            return;
-        }
-        pickNativeFallback(function (root) {
-            if (root) { addRoot(root); return; }
-            call('pngPickFolder', pickDialogArgs(), function (path) {
-                if (!path) { setStatus(t('cancelled')); return; }
-                addRoot(path);
+        // Windows 備用：ExtendScript PowerShell / HTML
+        pickExplorer(function (path) {
+            if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
+                addRoot(path); return;
+            }
+            if (!path || path.length === 0) {
+                setStatus(t('cancelled')); return;
+            }
+            var err = errMsg(path);
+            setStatus(t('explorerErr', { err: err }), 'err');
+            pickNativeFallback(function (root, reason) {
+                if (root) { addRoot(root); return; }
+                setStatus(t('cancelledReason', { reason: reason || 'none' }), 'err');
             });
         });
     }

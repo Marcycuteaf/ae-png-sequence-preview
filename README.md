@@ -45,6 +45,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 | Version | Notes |
 | --- | --- |
+| **1.0.8** | macOS folder picker — ExtendScript Folder.selectDialog + cep.fs fallback |
 | **1.0.7** | Windows folder picker — use `cep.fs.showOpenDialog` (same as BEN CODE) |
 | **1.0.6** | Windows folder picker fix — reliable Explorer dialog, no small fallback on cancel |
 | **1.0.5** | In-panel language switch (TC · SC · en · ja) |

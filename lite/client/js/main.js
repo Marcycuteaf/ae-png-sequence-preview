@@ -186,13 +186,34 @@
         var result;
         try {
             if (typeof fs.showOpenDialogEx === 'function') {
-                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Open');
+                result = fs.showOpenDialogEx(false, true, title, '', [], '', IS_WIN ? 'Select Folder' : 'Choose');
             } else {
                 result = fs.showOpenDialog(false, true, title, '', []);
             }
         } catch (e) { return null; }
-        if (result && result.data && result.data.length > 0) return result.data[0];
+        if (result && result.data && result.data.length > 0 &&
+            (result.err === undefined || result.err === 0)) {
+            return result.data[0];
+        }
         return null;
+    }
+
+    function pickFolderMac(cb) {
+        setStatus('開啟資料夾…');
+        call('pngPickFolder', ['選擇 PNG 序列資料夾', '選擇此資料夾'], function (path) {
+            if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
+                cb(path);
+                return;
+            }
+            if (path && path.indexOf('ERR:') === 0) {
+                setStatus(errMsg(path), 'err');
+            }
+            if (cepFsAvailable()) {
+                var cepPath = pickFolderCep();
+                if (cepPath) { cb(cepPath); return; }
+            }
+            cb(null);
+        });
     }
 
     function pickExplorer(cb) {
@@ -562,6 +583,14 @@
     }
 
     function openFolderPicker() {
+        if (!IS_WIN) {
+            pickFolderMac(function (path) {
+                if (path) { addRoot(path); return; }
+                setStatus('已取消');
+            });
+            return;
+        }
+
         if (cepFsAvailable()) {
             setStatus('開啟資料夾…');
             var path = pickFolderCep();
@@ -570,28 +599,18 @@
             return;
         }
 
-        if (IS_WIN) {
-            pickExplorer(function (path) {
-                if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
-                    addRoot(path);
-                    return;
-                }
-                if (!path || path.length === 0) {
-                    setStatus('已取消');
-                    return;
-                }
-                setStatus(errMsg(path) + ' → 改用備用選取器', 'err');
-                pickFolderNative(function (root) {
-                    if (root) addRoot(root);
-                });
-            });
-            return;
-        }
-        pickFolderNative(function (root) {
-            if (root) { addRoot(root); return; }
-            call('pngPickFolder', ['選擇 PNG 序列資料夾', '選擇此資料夾'], function (path) {
-                if (!path) { setStatus('已取消'); return; }
+        pickExplorer(function (path) {
+            if (path && path.indexOf('ERR:') !== 0 && path.length > 0) {
                 addRoot(path);
+                return;
+            }
+            if (!path || path.length === 0) {
+                setStatus('已取消');
+                return;
+            }
+            setStatus(errMsg(path) + ' → 改用備用選取器', 'err');
+            pickFolderNative(function (root) {
+                if (root) addRoot(root);
             });
         });
     }
