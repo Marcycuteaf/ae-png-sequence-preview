@@ -36,6 +36,66 @@
         return ERR[code] || ret.slice(4);
     }
 
+    // ---- 跟隨 AE 面板配色 (appSkinInfo) ----
+    function rgbToHex(rgb) {
+        if (!rgb) return null;
+        var r = rgb.red, g = rgb.green, b = rgb.blue;
+        if (r > 255 || g > 255 || b > 255) {
+            r = Math.round(r / 256);
+            g = Math.round(g / 256);
+            b = Math.round(b / 256);
+        }
+        function h(v) {
+            v = Math.max(0, Math.min(255, Math.round(v)));
+            var s = v.toString(16);
+            return s.length === 1 ? '0' + s : s;
+        }
+        return '#' + h(r) + h(g) + h(b);
+    }
+    function uiToHex(ui) { return ui && ui.color ? rgbToHex(ui.color) : null; }
+    function shade(hex, amt) {
+        var m = /^#?([0-9a-f]{6})$/i.exec(String(hex));
+        if (!m) return hex;
+        var n = parseInt(m[1], 16);
+        var r = Math.max(0, Math.min(255, ((n >> 16) & 255) + amt));
+        var g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt));
+        var b = Math.max(0, Math.min(255, (n & 255) + amt));
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    function isLightBg(hex) {
+        var m = /^#?([0-9a-f]{6})$/i.exec(String(hex));
+        if (!m) return false;
+        var n = parseInt(m[1], 16);
+        var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+        return (0.299 * r + 0.587 * g + 0.114 * b) > 140;
+    }
+    function applyHostTheme() {
+        if (!cs) return;
+        try {
+            var skin = cs.getHostEnvironment().appSkinInfo;
+            if (!skin) return;
+            var bg = uiToHex(skin.panelBackgroundColorSRGB) ||
+                uiToHex(skin.panelBackgroundColor) || '#323232';
+            var hl = rgbToHex(skin.systemHighlightColor) || '#2d8ceb';
+            var light = isLightBg(bg);
+            var s = document.documentElement.style;
+            s.setProperty('--bg', bg);
+            s.setProperty('--panel', shade(bg, light ? -8 : 8));
+            s.setProperty('--panel2', shade(bg, light ? 12 : -12));
+            s.setProperty('--line', shade(bg, light ? -20 : 20));
+            s.setProperty('--stage', shade(bg, light ? -16 : -16));
+            s.setProperty('--txt', light ? '#232323' : '#e8e8e8');
+            s.setProperty('--muted', light ? '#666666' : '#a0a0a0');
+            s.setProperty('--accent', hl);
+            if (skin.baseFontFamily) {
+                document.body.style.fontFamily = skin.baseFontFamily + ', "PingFang TC", "Segoe UI", sans-serif';
+            }
+            if (skin.baseFontSize) {
+                document.body.style.fontSize = Math.round(skin.baseFontSize) + 'px';
+            }
+        } catch (e) {}
+    }
+
     function setStatus(msg, type) {
         els.status.textContent = msg;
         els.status.className = 'status ' + (type || '');
@@ -561,6 +621,11 @@
         else if (e.key === 'ArrowUp') { e.preventDefault(); step(-1); }
         else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
     });
+
+    applyHostTheme();
+    if (cs && typeof cs.addEventListener === 'function') {
+        cs.addEventListener(CSInterface.THEME_COLOR_CHANGED_EVENT, applyHostTheme);
+    }
 
     setStatus('就緒');
     restoreRoots();

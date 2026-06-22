@@ -1,11 +1,13 @@
 :root {
-    --bg: #1e1e1e;
-    --panel: #262626;
-    --panel2: #303030;
-    --line: #3a3a3a;
-    --txt: #e0e0e0;
-    --muted: #888;
-    --accent: #4a9eff;
+    /* AE 預設深色面板 fallback（執行時由 appSkinInfo 覆寫） */
+    --bg: #323232;
+    --panel: #3a3a3a;
+    --panel2: #2a2a2a;
+    --line: #474747;
+    --stage: #262626;
+    --txt: #e8e8e8;
+    --muted: #a0a0a0;
+    --accent: #2d8ceb;
     --ok: #4cd07d;
     --err: #ff6b6b;
 }
@@ -94,7 +96,7 @@ body { display: flex; flex-direction: column; padding: 6px; gap: 6px; }
 }
 .stage {
     flex: 1 1 auto; min-height: 100px;
-    background: #181818; border-radius: 4px;
+    background: var(--stage); border-radius: 4px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
 }
