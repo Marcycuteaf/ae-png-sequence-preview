@@ -53,7 +53,7 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 ## Documentation
 
-- **[Interactive Demo](docs/demo/index.html)** — try the panel in your browser (no AE required)
+- **[Interactive Demo](https://marcycuteaf.github.io/ae-png-sequence-preview/demo/)** — try the panel in your browser (no AE required)
 - [TC](docs/readme/zh-TC.md)
 - [English](docs/readme/en.md)
 - [日本語](docs/readme/ja.md)
