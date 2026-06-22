@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PNG Seq Lite</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="top">
+        <button id="pick" class="btn-primary">加入資料夾</button>
+        <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+        <button id="clear" class="btn" title="清空全部">清空</button>
+        <div id="root" class="root"></div>
+    </div>
+
+    <div class="main">
+        <div class="side">
+            <div class="side-head">
+                <input id="search" class="search" type="text" placeholder="搜尋序列…">
+                <span id="count" class="badge">0</span>
+            </div>
+            <div id="tree" class="tree"></div>
+        </div>
+
+        <div class="preview">
+            <div id="stage" class="stage">
+                <img id="frame" alt="">
+                <div id="empty" class="empty">選取左側序列以預覽</div>
+            </div>
+            <div id="name" class="name">—</div>
+            <div id="info" class="info">0 / 0</div>
+            <input id="slider" class="slider" type="range" min="0" max="0" value="0" disabled>
+            <div class="controls">
+                <button id="prev" class="btn" disabled title="上一個">◀</button>
+                <button id="play" class="btn" disabled>播放</button>
+                <button id="next" class="btn" disabled title="下一個">▶</button>
+                <label class="fps">FPS <input id="fps" type="number" min="1" max="120" value="12"></label>
+                <label class="chk" title="選取後自動播放">
+                    <input id="autoplay" type="checkbox" checked> 自動播放
+                </label>
+                <label class="chk" title="加入時間軸時自動 Loop">
+                    <input id="autoloop" type="checkbox"> 自動 Loop
+                </label>
+                <button id="loop" class="btn" title="對選中圖層套用 Loop">Loop</button>
+                <button id="import" class="btn-primary" disabled>加入時間軸</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="status" class="status">就緒</div>
+
+    <script src="./js/lib/CSInterface.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>

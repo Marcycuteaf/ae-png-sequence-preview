@@ -54,6 +54,20 @@ After Effects 2019–2025+ · macOS / Windows · TC / SC / EN / 日本語
 
 ---
 
+## PNG Seq Lite（簡約版）
+
+獨立版本線 **Lite 1.0.x**，Bundle ID `com.marcy.pngseq.lite`，可與完整版同時安裝。
+
+| | 完整版 | Lite |
+|---|--------|------|
+| 版本 | 1.0.6 | Lite 1.0.0 |
+| 語言 | TC / SC / EN / 日本語 | 繁中固定 |
+| 主題 | 可自訂 | 固定深色 |
+
+打包：`./package-lite.sh` → `dist/lite/`
+
+---
+
 <sub>Bundle ID `com.marcy.pngseq`</sub>
 
 ---
